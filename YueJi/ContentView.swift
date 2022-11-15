@@ -30,13 +30,14 @@ struct ContentView: View {
     private var records: FetchedResults<Record>
     private var cateAndFilteredRecords: [Int: [Int: [Record]]] {
         // 当前页面不在自己这里，就不要更新了，太麻烦了，那会不会后面一个层级删除了一个，这里还没更新？到时候再解决吧
+        // 否则，navigationcontroller把一个push进去的时候，当前的tag会改变
         // 正好用normalContentView判断
         var cateAndFilteredRecords1 = [Int: [Int: [Record]]]()
         
         for record in records {
-//            if !(currentShowingTag.title == Tag.allTag.title || record.tags?.first?.title == currentShowingTag.title) {
-//                continue
-//            }
+            if !(currentShowingTag.title == Tag.allTag.title || record.tags?.first?.title == currentShowingTag.title) {
+                continue
+            }
             
             let components = Calendar.current.dateComponents([.year, .month], from: record.wrappedCreateDate)
             
@@ -67,7 +68,7 @@ struct ContentView: View {
     @State private var currentTappedTag: Tag = Tag.noneTag
     @State private var currentShowingTag = Tag.noneTag
     // 为了解决，在标签的滑动，然后跳入下一页的时候，标签都会左移，那么currentShowingTag会变化，导致出错。
-    @State private var normalContentView = true
+    @State private var childViewShown = false
     let selectedChangeGemerator = UISelectionFeedbackGenerator()
     
     let detector: CurrentValueSubject<CGFloat, Never>
@@ -90,9 +91,14 @@ struct ContentView: View {
                         ForEach(cateAndFilteredRecords.sorted(by: {$0.key > $1.key}), id: \.key) { dictYearRecords in
                             Section("\(dictYearRecords.key)") {
                                 ForEach(dictYearRecords.value.sorted(by: {$0.key > $1.key}), id: \.key) { dictMonthRecords in
-                                    NavigationLink {
+                                    NavigationLink(isActive: $childViewShown) {
                                         MonthCateView(year: dictYearRecords.key, month: dictMonthRecords.key, cateRecords: dictMonthRecords.value)
                                             .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
+                                            .task {
+                                                // 好像第三个的时候也会触发？是的，也会有问题啊。
+                                                // 第三个record.text = text的时候都会触发这个不知道为啥
+//                                                self.normalContentView = false
+                                            }
                                     } label: {
                                         HStack {
                                             Text("\(dictMonthRecords.key)")
@@ -178,10 +184,9 @@ struct ContentView: View {
                                                 .padding(EdgeInsets(top: 10, leading: 20, bottom: 10, trailing: 20))
                                                 .opacity(0)
                                                 .frame(minWidth: fullView.size.width / 4)
-    //                                            .background(.blue)
 
                                             GeometryReader { geo in
-                                                if (normalContentView && geo.frame(in: .global).midX >= fullView.size.width / 3 && geo.frame(in: .global).midX <= fullView.size.width / 3 * 2) {
+                                                if (!childViewShown && geo.frame(in: .global).midX >= fullView.size.width / 3 && geo.frame(in: .global).midX <= fullView.size.width / 3 * 2) {
                                                     Text("\(tag.title)")
                                                         .font(.title3)
                                                         .frame(width: geo.size.width)
@@ -189,8 +194,6 @@ struct ContentView: View {
                                                         .background(tag.color)
                                                         .cornerRadius(15)
                                                         .offset(CGSize(width: 0, height: geo.size.height / 5))
-                                                    //                                                .position(y: geo.size.height)
-                                                    //                                                .clipShape(RoundedRectangle(cornerRadius: 4))
                                                         .shadow(color: .primary.opacity(0.5), radius: 5)
                                                         .overlay(
                                                             RoundedRectangle(cornerRadius: 15)
@@ -207,7 +210,7 @@ struct ContentView: View {
                                                             print(tag.title)
                                                             print("geo.frame(in: .global).midX: \(geo.frame(in: .global).midX)")
                                                             print("fullView.size.width: \(fullView.size.width)")
-                                                            if normalContentView && currentShowingTag != tag {
+                                                            if !childViewShown && currentShowingTag != tag {
                                                                 selectedChangeGemerator.selectionChanged()
                                                                 currentShowingTag = tag
                                                             }
@@ -269,14 +272,16 @@ struct ContentView: View {
                 }
                 .navigationTitle("月记")
                 // 注意，不能放在NavigationView下面，这样的话，只有一次了。
-                .onAppear {
-                    print("ContentView OnAppear")
-                    normalContentView = true
-                }
-                .onDisappear {
-                    print("ContentView onDisappear")
-//                    normalContentView = false
-                }
+//                .onReceive(NotificationCenter.default.publisher(for: UIApplication.will), perform: )
+//                .onAppear {
+//                    print("ContentView OnAppear")
+//                    childViewShown = true
+//                }
+//                .onDisappear {
+//                    print("ContentView onDisappear")
+//                    childViewShown = false
+//                }
+                
             }
         }
         .ignoresSafeArea(edges: [.bottom, .leading, .trailing])

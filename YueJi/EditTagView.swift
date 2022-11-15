@@ -22,6 +22,8 @@ struct EditTagView: View {
                 
                 RoundedRectangle(cornerRadius: 5)
                     .fill(tagColor)
+                
+                ColorPicker("颜色拾取器", selection: $tagColor)
             }
             
             Section("按钮") {
