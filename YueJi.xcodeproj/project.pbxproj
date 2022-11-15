@@ -13,6 +13,15 @@
 		9D4988E22917F5650079D3E1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D4988E12917F5650079D3E1 /* Preview Assets.xcassets */; };
 		9D4988E42917F5650079D3E1 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4988E32917F5650079D3E1 /* Persistence.swift */; };
 		9D4988E72917F5650079D3E1 /* YueJi.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9D4988E52917F5650079D3E1 /* YueJi.xcdatamodeld */; };
+		9D4988F32917F5E00079D3E1 /* ContentViewExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4988F22917F5E00079D3E1 /* ContentViewExample.swift */; };
+		9D4988F52918A9120079D3E1 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4988F42918A9110079D3E1 /* Tag.swift */; };
+		9D4988F82918AC7E0079D3E1 /* Record+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4988F62918AC7E0079D3E1 /* Record+CoreDataClass.swift */; };
+		9D4988F92918AC7E0079D3E1 /* Record+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4988F72918AC7E0079D3E1 /* Record+CoreDataProperties.swift */; };
+		9D4988FB2918DD610079D3E1 /* StaticProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4988FA2918DD610079D3E1 /* StaticProperties.swift */; };
+		9DAC3EC5291A3BC20047935E /* Color+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DAC3EC4291A3BC20047935E /* Color+Codable.swift */; };
+		9DC8DB37291B31340074F3E7 /* MonthCateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC8DB36291B31340074F3E7 /* MonthCateView.swift */; };
+		9DC8DB39291B3A390074F3E7 /* DayTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC8DB38291B3A390074F3E7 /* DayTextView.swift */; };
+		9DC8DB3B291D251E0074F3E7 /* EditTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC8DB3A291D251E0074F3E7 /* EditTagView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +33,15 @@
 		9D4988E32917F5650079D3E1 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		9D4988E62917F5650079D3E1 /* YueJi.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = YueJi.xcdatamodel; sourceTree = "<group>"; };
 		9D4988E82917F5650079D3E1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9D4988F22917F5E00079D3E1 /* ContentViewExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewExample.swift; sourceTree = "<group>"; };
+		9D4988F42918A9110079D3E1 /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
+		9D4988F62918AC7E0079D3E1 /* Record+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Record+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
+		9D4988F72918AC7E0079D3E1 /* Record+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Record+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
+		9D4988FA2918DD610079D3E1 /* StaticProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticProperties.swift; sourceTree = "<group>"; };
+		9DAC3EC4291A3BC20047935E /* Color+Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Codable.swift"; sourceTree = "<group>"; };
+		9DC8DB36291B31340074F3E7 /* MonthCateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthCateView.swift; sourceTree = "<group>"; };
+		9DC8DB38291B3A390074F3E7 /* DayTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayTextView.swift; sourceTree = "<group>"; };
+		9DC8DB3A291D251E0074F3E7 /* EditTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTagView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,12 +74,21 @@
 		9D4988D92917F5650079D3E1 /* YueJi */ = {
 			isa = PBXGroup;
 			children = (
+				9D4988F62918AC7E0079D3E1 /* Record+CoreDataClass.swift */,
+				9D4988F72918AC7E0079D3E1 /* Record+CoreDataProperties.swift */,
 				9D4988DA2917F5650079D3E1 /* YueJiApp.swift */,
+				9D4988FA2918DD610079D3E1 /* StaticProperties.swift */,
 				9D4988DC2917F5650079D3E1 /* ContentView.swift */,
+				9DC8DB3A291D251E0074F3E7 /* EditTagView.swift */,
+				9DC8DB36291B31340074F3E7 /* MonthCateView.swift */,
+				9DC8DB38291B3A390074F3E7 /* DayTextView.swift */,
+				9D4988F22917F5E00079D3E1 /* ContentViewExample.swift */,
 				9D4988DE2917F5650079D3E1 /* Assets.xcassets */,
 				9D4988E32917F5650079D3E1 /* Persistence.swift */,
 				9D4988E82917F5650079D3E1 /* Info.plist */,
 				9D4988E52917F5650079D3E1 /* YueJi.xcdatamodeld */,
+				9D4988F42918A9110079D3E1 /* Tag.swift */,
+				9DAC3EC4291A3BC20047935E /* Color+Codable.swift */,
 				9D4988E02917F5650079D3E1 /* Preview Content */,
 			);
 			path = YueJi;
@@ -145,10 +172,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D4988F92918AC7E0079D3E1 /* Record+CoreDataProperties.swift in Sources */,
+				9D4988F52918A9120079D3E1 /* Tag.swift in Sources */,
+				9DC8DB39291B3A390074F3E7 /* DayTextView.swift in Sources */,
 				9D4988E72917F5650079D3E1 /* YueJi.xcdatamodeld in Sources */,
 				9D4988E42917F5650079D3E1 /* Persistence.swift in Sources */,
+				9D4988F82918AC7E0079D3E1 /* Record+CoreDataClass.swift in Sources */,
 				9D4988DD2917F5650079D3E1 /* ContentView.swift in Sources */,
+				9DC8DB3B291D251E0074F3E7 /* EditTagView.swift in Sources */,
+				9D4988F32917F5E00079D3E1 /* ContentViewExample.swift in Sources */,
+				9D4988FB2918DD610079D3E1 /* StaticProperties.swift in Sources */,
+				9DAC3EC5291A3BC20047935E /* Color+Codable.swift in Sources */,
 				9D4988DB2917F5650079D3E1 /* YueJiApp.swift in Sources */,
+				9DC8DB37291B31340074F3E7 /* MonthCateView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -205,7 +241,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -259,7 +295,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -277,7 +313,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"YueJi/Preview Content\"";
-				DEVELOPMENT_TEAM = QXK2SWBXZ7;
+				DEVELOPMENT_TEAM = G4A24RZ5WH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -290,7 +326,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.jcwang.YueJi;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jcwang.YueJi12;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
