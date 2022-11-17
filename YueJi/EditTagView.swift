@@ -16,23 +16,46 @@ struct EditTagView: View {
     var currentTappedTag: Tag
     
     var body: some View {
-        Form {
-            Section("修改标签信息") {
-                TextField("tagTitle", text: $tagTitle)
-                
-                RoundedRectangle(cornerRadius: 5)
-                    .fill(tagColor)
-                
-                ColorPicker("颜色拾取器", selection: $tagColor)
-            }
-            
-            Section("按钮") {
-                Button("保存") {
-                    if let index = myTag.tags.firstIndex(where: { $0.title == currentTappedTag.title }) {
-                        myTag.editTag(index: index, title: tagTitle, color: tagColor)
+        Group {
+            if currentTappedTag.title == Tag.addTag.title {
+                Form {
+                    Section("待添加标签信息") {
+                        TextField("tagTitle", text: $tagTitle)
+                        
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(tagColor)
+                        
+                        ColorPicker("颜色拾取器", selection: $tagColor)
+                    }
+                    Section("按钮") {
+                        Button("添加标签") {
+                            let newTag = Tag(title: tagTitle, color: tagColor)
+                            myTag.add(newTag)
+                            
+                            dismiss()
+                        }
+                    }
+                }
+            } else {
+                Form {
+                    Section("修改标签信息") {
+                        TextField("tagTitle", text: $tagTitle)
+                        
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(tagColor)
+                        
+                        ColorPicker("颜色拾取器", selection: $tagColor)
                     }
                     
-                    dismiss()
+                    Section("按钮") {
+                        Button("保存") {
+                            if let index = myTag.tags.firstIndex(where: { $0.title == currentTappedTag.title }) {
+                                myTag.editTag(index: index, title: tagTitle, color: tagColor)
+                            }
+                            
+                            dismiss()
+                        }
+                    }
                 }
             }
         }
@@ -41,7 +64,7 @@ struct EditTagView: View {
             tagColor = currentTappedTag.color
             print(currentTappedTag.title)
         }
-        .navigationTitle("修改标签")
+        .navigationTitle(currentTappedTag.title == Tag.addTag.title ? "添加标签" : "修改标签")
     }
 }
 

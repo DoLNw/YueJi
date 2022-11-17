@@ -69,6 +69,8 @@ struct ContentView: View {
     @State private var currentShowingTag = Tag.noneTag
     // 为了解决，在标签的滑动，然后跳入下一页的时候，标签都会左移，那么currentShowingTag会变化，导致出错。
     @State private var childViewShown = false
+    @State private var selectedItem: String?
+    @State private var addButtonAnimationAmount = 1.0
     let selectedChangeGemerator = UISelectionFeedbackGenerator()
     
     let detector: CurrentValueSubject<CGFloat, Never>
@@ -89,27 +91,40 @@ struct ContentView: View {
                 VStack {
                     List {
                         ForEach(cateAndFilteredRecords.sorted(by: {$0.key > $1.key}), id: \.key) { dictYearRecords in
-                            Section("\(dictYearRecords.key)") {
+                            Section(header: Text("\(dictYearRecords.key)年")
+                                .font(.title)) {
                                 ForEach(dictYearRecords.value.sorted(by: {$0.key > $1.key}), id: \.key) { dictMonthRecords in
-                                    NavigationLink(isActive: $childViewShown) {
+//                                    NavigationLink(tag: "\(dictYearRecords.key)/\(dictMonthRecords.key)", selection: $selectedItem) {
+                                    NavigationLink {
                                         MonthCateView(year: dictYearRecords.key, month: dictMonthRecords.key, cateRecords: dictMonthRecords.value)
                                             .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
-                                            .task {
-                                                // 好像第三个的时候也会触发？是的，也会有问题啊。
-                                                // 第三个record.text = text的时候都会触发这个不知道为啥
-//                                                self.normalContentView = false
-                                            }
+//                                            .task {
+//                                                // 好像第三个的时候也会触发？是的，也会有问题啊。
+//                                                // 第三个record.text = text的时候都会触发这个不知道为啥
+////                                                self.normalContentView = false
+//                                            }
                                     } label: {
                                         HStack {
-                                            Text("\(dictMonthRecords.key)")
-                                                .font(.largeTitle)
+                                            HStack {
+                                                Text("\(dictMonthRecords.key)")
+                                                    .font(.largeTitle)
+                                                Text("月")
+                                                    .font(.caption)
+                                                    .offset(y: 5)
+                                            }
+                                            
+                                            Spacer()
                                             
                                             VStack(alignment: .leading) {
                                                 Spacer()
                                                 Text("篇数：\(dictMonthRecords.value.count)")
                                                     .font(.caption)
                                                     .foregroundColor(.secondary)
+                                                    .padding([.trailing], 5)
                                             }
+                                        }
+                                        .onTapGesture {
+//                                            self.selectedItem = "\(dictYearRecords.key)/\(dictMonthRecords.key)"
                                         }
                                     }
                                 }
@@ -123,8 +138,10 @@ struct ContentView: View {
                                     print("\(a)")
                                 }
                             }
+//                                .headerProminence(.increased)
                         }
                     }
+                    .listStyle(.sidebar)
 //                            Section("\(dictYearRecords.key)") {
 //                                ForEach(dictYearRecords.value.sorted(by: {$0.key > $1.key}), id: \.key) { dictMonthRecords in
 //                                    NavigationLink {
@@ -173,79 +190,93 @@ struct ContentView: View {
                                 .foregroundColor(Color(.secondarySystemBackground))
                                 .background(.ultraThinMaterial)
                                 .shadow(color: .primary.opacity(0.35), radius: 5)
+                            
+                            GeometryReader { scrollewViewGeo in
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 30) {
+                                        ForEach(myTag.tags) { tag in
+                                            ZStack {
+                                                // 不加这个，下面的Geo不知道大小是多小，所以只能这么办了
+                                                Text("\(tag.title)")
+                                                    .font(.title3)
+                                                    .padding(EdgeInsets(top: 10, leading: 20, bottom: 10, trailing: 20))
+                                                    .opacity(0)
+                                                    .frame(minWidth: fullView.size.width / 4)
 
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 30) {
-                                    ForEach(myTag.tags) { tag in
-                                        ZStack {
-                                            // 不加这个，下面的Geo不知道大小是多小，所以只能这么办了
-                                            Text("\(tag.title)")
-                                                .font(.title3)
-                                                .padding(EdgeInsets(top: 10, leading: 20, bottom: 10, trailing: 20))
-                                                .opacity(0)
-                                                .frame(minWidth: fullView.size.width / 4)
-
-                                            GeometryReader { geo in
-                                                if (!childViewShown && geo.frame(in: .global).midX >= fullView.size.width / 3 && geo.frame(in: .global).midX <= fullView.size.width / 3 * 2) {
-                                                    Text("\(tag.title)")
-                                                        .font(.title3)
-                                                        .frame(width: geo.size.width)
-                                                        .padding([.top, .bottom], 10)
-                                                        .background(tag.color)
-                                                        .cornerRadius(15)
-                                                        .offset(CGSize(width: 0, height: geo.size.height / 5))
-                                                        .shadow(color: .primary.opacity(0.5), radius: 5)
-                                                        .overlay(
-                                                            RoundedRectangle(cornerRadius: 15)
-                                                                .stroke(Color.blue, lineWidth: 2)
-                                                                .offset(CGSize(width: 0, height: geo.size.height / 5))
-                                                        )
-                                                        .onTapGesture {
-                                                            currentTappedTag = tag
-                                                            showingTagEditor = true
-                                                            print(tag.title)
-                                                        }
-                                                        .rotation3DEffect(.degrees(-geo.frame(in: .global).midX + fullView.frame(in: .global).midX) / 8, axis: (x: 0, y: 1, z: 0))
-                                                        .task {
-                                                            print(tag.title)
-                                                            print("geo.frame(in: .global).midX: \(geo.frame(in: .global).midX)")
-                                                            print("fullView.size.width: \(fullView.size.width)")
-                                                            if !childViewShown && currentShowingTag != tag {
-                                                                selectedChangeGemerator.selectionChanged()
-                                                                currentShowingTag = tag
+                                                GeometryReader { geo in
+                                                    if (scrollewViewGeo.frame(in: .global).minX > 0 && geo.frame(in: .global).midX >= fullView.size.width / 3 && geo.frame(in: .global).midX <= fullView.size.width / 3 * 2) {
+                                                        Text("\(tag.title)")
+                                                            .font(.title3)
+                                                            .frame(width: geo.size.width)
+                                                            .padding([.top, .bottom], 10)
+                                                            .background(tag.color)
+                                                            .cornerRadius(15)
+                                                            .offset(CGSize(width: 0, height: geo.size.height / 5))
+                                                            .shadow(color: .primary.opacity(0.5), radius: 5)
+                                                            .overlay(
+                                                                RoundedRectangle(cornerRadius: 15)
+                                                                    .stroke(Color.blue, lineWidth: 2)
+                                                                    .scaleEffect(addButtonAnimationAmount)
+                                                                    .opacity(2 - addButtonAnimationAmount)
+                                                                    .animation(.easeOut(duration: 1), value: addButtonAnimationAmount)
+                                                                    .offset(CGSize(width: 0, height: geo.size.height / 5))
+                                                            )
+                                                            .onTapGesture {
+                                                                currentTappedTag = tag
+                                                                showingTagEditor = true
+                                                                print(tag.title)
                                                             }
-                                                        }
-                                                } else {
-                                                    Text("\(tag.title)")
-                                                        .font(.title3)
-                                                        .frame(width: geo.size.width)
-                                                        .padding([.top, .bottom], 10)
-                                                        .background(tag.color)
-                                                        .cornerRadius(15)
-                                                        .offset(CGSize(width: 0, height: geo.size.height / 5))
-                                                        .shadow(color: .primary.opacity(0.5), radius: 0)
-                                                        .overlay(
-                                                            RoundedRectangle(cornerRadius: 15)
-                                                                .stroke(Color.blue, lineWidth: 0)
-                                                                .offset(CGSize(width: 0, height: geo.size.height / 5))
-                                                        )
-                                                        .onTapGesture {
-                                                            currentTappedTag = tag
-                                                            showingTagEditor = true
-                                                            print(tag.title)
-                                                        }
-                                                        .rotation3DEffect(.degrees(-geo.frame(in: .global).midX + fullView.frame(in: .global).midX) / 8, axis: (x: 0, y: 1, z: 0))
-                                                        .task {
-                                                            print(tag.title)
-                                                            print("geo.frame(in: .global).midX: \(geo.frame(in: .global).midX)")
-                                                            print("fullView.size.width: \(fullView.size.width)")
-                                                        }
+                                                            .rotation3DEffect(.degrees(-geo.frame(in: .global).midX + fullView.frame(in: .global).midX) / 8, axis: (x: 0, y: 1, z: 0))
+                                                            .task {
+                                                                print(tag.title)
+//                                                                print("geo.frame(in: .global).midX: \(geo.frame(in: .global).midX)")
+//                                                                print("fullView.size.width: \(fullView.size.width)")
+                                                                print("11scrollewViewGeo.frame(in: .global).minX: \(scrollewViewGeo.frame(in: .global).minX)")
+                                                                if currentShowingTag != tag {
+                                                                    selectedChangeGemerator.selectionChanged()
+                                                                    currentShowingTag = tag
+                                                                    
+                                                                    if tag.title == Tag.addTag.title {
+                                                                        addButtonAnimationAmount = 2
+                                                                    } else {
+                                                                        addButtonAnimationAmount = 1
+                                                                    }
+                                                                }
+                                                            }
+                                                    } else {
+                                                        Text("\(tag.title)")
+                                                            .font(.title3)
+                                                            .frame(width: geo.size.width)
+                                                            .padding([.top, .bottom], 10)
+                                                            .background(tag.color)
+                                                            .cornerRadius(15)
+                                                            .offset(CGSize(width: 0, height: geo.size.height / 5))
+                                                            .shadow(color: .primary.opacity(0.5), radius: 0)
+                                                            .overlay(
+                                                                RoundedRectangle(cornerRadius: 15)
+                                                                    .stroke(Color.blue, lineWidth: 0)
+                                                                    .offset(CGSize(width: 0, height: geo.size.height / 5))
+                                                            )
+                                                            .onTapGesture {
+                                                                currentTappedTag = tag
+                                                                showingTagEditor = true
+                                                                print(tag.title)
+                                                            }
+                                                            .rotation3DEffect(.degrees(-geo.frame(in: .global).midX + fullView.frame(in: .global).midX) / 8, axis: (x: 0, y: 1, z: 0))
+                                                            .task {
+                                                                print(tag.title)
+                                                                print("scrollewViewGeo.frame(in: .global).minX: \(scrollewViewGeo.frame(in: .global).minX)")
+//                                                                print("geo.frame(in: .global).midX: \(geo.frame(in: .global).midX)")
+//                                                                print("fullView.size.width: \(fullView.size.width)")
+                                                            }
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
                             }
+                            
                             .padding([.leading, .trailing], 10)
                             .sheet(isPresented: $showingTagEditor, content: {
                                 EditTagView(myTag: myTag, currentTappedTag: currentTappedTag)
@@ -281,7 +312,6 @@ struct ContentView: View {
 //                    print("ContentView onDisappear")
 //                    childViewShown = false
 //                }
-                
             }
         }
         .ignoresSafeArea(edges: [.bottom, .leading, .trailing])
@@ -310,7 +340,12 @@ struct ContentView: View {
 //            if let tag = myTag.tags.randomElement() {
 //                newRecord.tags = [Tag(title: tag.title, color: tag.color)]
 //            }
-            let tag = myTag.tags[Int.random(in: 1 ..< myTag.tags.count-1)]
+            // 0 是无标签，1是全部标签，最后一个是添加按钮
+            var tag = myTag.tags[Int.random(in: 2 ..< myTag.tags.count-1)]
+            
+            if currentShowingTag.title != Tag.allTag.title {
+                tag = currentShowingTag
+            }
             newRecord.tags = [Tag(title: tag.title, color: tag.color)]
             
             do {

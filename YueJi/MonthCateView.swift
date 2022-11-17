@@ -72,29 +72,27 @@ struct MonthCateView: View {
     
     // 理论上添加，就只能根据当前的时间来，我现在模拟
     private func addItem() {
-//        withAnimation {
-//            let newRecord = Record(context: viewContext)
-//            newRecord.uuid = UUID()
-//            var dateComponent = DateComponents()
-//            dateComponent.year = self.year
-//            dateComponent.month = self.month
-//            dateComponent.day = Int.random(in: 1 ... 31)
-//            newRecord.createDate = Calendar.current.date(from: dateComponent)
-//            newRecord.modifiedDate = Date()
-//            newRecord.text = "Example"
-//            newRecord.title = newRecord.createDate!.formatted(date: .long, time: .shortened)
-//
-//            do {
-//                try viewContext.save()
-//            } catch {
-//                // Replace this implementation with code to handle the error appropriately.
-//                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-//                let nsError = error as NSError
-//                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-//            }
-//        }
-        cateRecords.first?.text = "asd asd asd ads asd"
-//        cateRecords.last?.title = "asdsa"
+        withAnimation {
+            let newRecord = Record(context: viewContext)
+            newRecord.uuid = UUID()
+            var dateComponent = DateComponents()
+            dateComponent.year = self.year
+            dateComponent.month = self.month
+            dateComponent.day = Int.random(in: 1 ... 31)
+            newRecord.createDate = Calendar.current.date(from: dateComponent)
+            newRecord.modifiedDate = Date()
+            newRecord.text = "Example"
+            newRecord.title = newRecord.createDate!.formatted(date: .long, time: .shortened)
+
+            do {
+                try viewContext.save()
+            } catch {
+                // Replace this implementation with code to handle the error appropriately.
+                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
+        }
     }
     
     private func deleteItems(offsets: IndexSet) {

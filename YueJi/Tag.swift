@@ -31,7 +31,7 @@ public class Tags: ObservableObject {
             tags.append(Tag(title: "标签6", color: Tag.tagColors.randomElement() ?? Color.black))
             tags.append(Tag(title: "标签asdasd7", color: Tag.tagColors.randomElement() ?? Color.black))
             tags.append(Tag(title: "标签68", color: Tag.tagColors.randomElement() ?? Color.black))
-            tags.append(Tag(title: "添加", color: Tag.tagColors.randomElement() ?? Color.black))
+            tags.append(Tag.addTag)
             
             save()
         }
@@ -56,7 +56,8 @@ public class Tags: ObservableObject {
     }
     
     func add(_ tag: Tag) {
-        tags.append(tag)
+        tags.insert(tag, at: tags.count - 1)
+//        tags.append(tag)
         save()
     }
     func delete(_ tag: Tag) {
@@ -88,6 +89,7 @@ public class Tag: NSObject, Identifiable, Codable, NSSecureCoding {
     static let tagColors = [Color.yellow, .blue, .indigo, .cyan, .mint, .teal, .pink, .purple, .orange, .brown]
     static let noneTag = Tag(title: "无", color: .indigo)
     static let allTag = Tag(title: "全部", color: .mint)
+    static let addTag = Tag(title: "添加", color: .cyan)
     
     public var id = UUID()
     public var title: String
