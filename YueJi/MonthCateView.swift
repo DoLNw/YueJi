@@ -10,52 +10,94 @@ import SwiftUI
 struct MonthCateView: View {
     let year: Int
     let month: Int
-    var cateRecords: [Record]
+    var cateDates: [Record]
+    
+    @Binding var currentShowingTag: Tag
     
     @Environment(\.managedObjectContext) private var viewContext
     
+//    private var didSave = NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave)
+    // 为了改动record后，能刷新该页面
+    @State private var refreshID = true
+    @State private var showAddNewRecord = false
+    
+    @State private var showingMode = true
+    
+    init(year: Int, month: Int, cateDates: [Record], currentShowingTag: Binding<Tag>) {
+        self.year = year
+        self.month = month
+        self.cateDates = cateDates
+        self._currentShowingTag = currentShowingTag
+    }
+    
 //    @FetchRequest(
-//        sortDescriptors: [NSSortDescriptor(keyPath: \Record.createDate, ascending: false)],
+//        sortDescriptors: [NSSortDescriptor(keyPath: \Record.cateDate, ascending: false)],
 //        animation: .default)
 //    private var records: FetchedResults<Record>
-//    private var cateRecords: [Record] {
-//        var cateRecords = [Record]()
+//    private var cateDates: [Record] {
+//        var cateDates = [Record]()
 //
 //        for record in records {
-//            let components = Calendar.current.dateComponents([.year, .month, .day], from: record.wrappedCreateDate)
+//            let components = Calendar.current.dateComponents([.year, .month, .day], from: record.wrappedcateDate)
 //            if self.year == components.year && components.month == self.month {
-//                cateRecords.append(record)
+//                cateDates.append(record)
 //            }
 //        }
 //
-//        return cateRecords
+//        return cateDates
 //    }
     
     var body: some View {
-        List {
-            ForEach(cateRecords) { record in
-                NavigationLink {
-                    DayTextView(record: record)
-                        .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
-                } label: {
-                    ZStack(alignment: .topLeading) {
-                        Circle()
-                            .fill(record.wrappedTags[0].color)
-                            .frame(width: 5, height: 5)
-                        HStack {
-                            Text(record.wrappedCreateDate, format: .dateTime.day())
-                                .font(.largeTitle)
-                            VStack {
-                                Text(record.wrappedTitle)
+        Group {
+            if showingMode {
+                List {
+                    ForEach(cateDates) { record in
+                        NavigationLink {
+                            DayTextView(record: record)
+                                .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
+                        } label: {
+                            ZStack(alignment: .topLeading) {
+                                Circle()
+                                    .fill(record.wrappedTags[0].color)
+                                    .frame(width: 5, height: 5)
+                                HStack {
+                                    Text(record.wrappedCateDate, format: .dateTime.day())
+                                        .font(.largeTitle)
+                                    VStack {
+                                        Text(record.wrappedTitle + (refreshID ? "" : ""))
+                                    }
+                                }
                             }
+                        }
+                    }
+                    .onDelete(perform: deleteItems(offsets:))
+        //            .id(refreshID)
+        //            .onReceive(self.didSave, perform: { _ in
+        //                self.refreshID = UUID()
+        //            })
+                }
+                .sheet(isPresented: $showAddNewRecord, content: {
+                    AddNewRecordView(tag: currentShowingTag, year: year, month: month)
+                        .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
+                })
+            } else {
+                List {
+                    ForEach(cateDates) { record in
+                        VStack {
+                            Text(record.wrappedTitle)
+                            Text(record.wrappedText)
                         }
                     }
                 }
             }
-            .onDelete(perform: deleteItems(offsets:))
+        }
+        .onAppear {
+            refreshID.toggle()
+            // 没必要，主页添加了
+//            addCurrentItem()
         }
 //        NavigationLink {
-//            DayTextView(record: cateRecords.first!)
+//            DayTextView(record: cateDates.first!)
 //                .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
 //        } label: {
 //            Text("Test Example")
@@ -63,27 +105,45 @@ struct MonthCateView: View {
         .navigationTitle("\(year)年\(month)月")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: addItem) {
+                Button {
+                    showAddNewRecord = true
+                } label: {
                     Label("asd", systemImage: "plus")
+                }
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    showingMode.toggle()
+                } label: {
+                    Text("Mode")
                 }
             }
         }
     }
     
     // 理论上添加，就只能根据当前的时间来，我现在模拟
-    private func addItem() {
+    private func addCurrentItem() {
+        let dateComponment = Calendar.current.dateComponents([.year, .month, .day], from: Date.now)
+        let nowYear = dateComponment.year ?? 0
+        let nowMonth = dateComponment.month ?? 0
+        let nowDay = dateComponment.day ?? 0
+        if nowYear == year && nowMonth == month {
+            for record in cateDates {
+                let com = Calendar.current.dateComponents([.day], from: record.wrappedCateDate)
+                if (com.day ?? 0) == nowDay {
+                    return
+                }
+            }
+        }
+        
         withAnimation {
             let newRecord = Record(context: viewContext)
             newRecord.uuid = UUID()
-            var dateComponent = DateComponents()
-            dateComponent.year = self.year
-            dateComponent.month = self.month
-            dateComponent.day = Int.random(in: 1 ... 31)
-            newRecord.createDate = Calendar.current.date(from: dateComponent)
+            newRecord.cateDate = Date.now
             newRecord.modifiedDate = Date()
-            newRecord.text = "Example"
-            newRecord.title = newRecord.createDate!.formatted(date: .long, time: .shortened)
-
+            newRecord.text = ""
+            newRecord.title = newRecord.cateDate!.formatted(date: .long, time: .omitted)
+            
             do {
                 try viewContext.save()
             } catch {

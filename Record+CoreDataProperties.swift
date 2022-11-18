@@ -11,11 +11,11 @@ import CoreData
 
 
 extension Record {
-
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Record> {
         return NSFetchRequest<Record>(entityName: "Record")
     }
 
+    @NSManaged public var cateDate: Date?
     @NSManaged public var createDate: Date?
     @NSManaged public var modifiedDate: Date?
     @NSManaged public var tags: [Tag]?
@@ -24,6 +24,9 @@ extension Record {
     @NSManaged public var uuid: UUID?
     @NSManaged public var wordCount: Int64
     
+    public var wrappedCateDate: Date {
+        cateDate ?? Date()
+    }
     public var wrappedCreateDate: Date {
         createDate ?? Date()
     }

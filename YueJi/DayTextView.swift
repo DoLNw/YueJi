@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+//import HighlightedTextEditor
 
 struct DayTextView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.scenePhase) var scenePhase
     
+//    @ObservedObject var record: Record
     var record: Record
     private var dateDescription: String {
         let compnents = Calendar.current.dateComponents([.year, .month, .day], from: record.wrappedCreateDate)
@@ -19,6 +21,7 @@ struct DayTextView: View {
         return "\(compnents.day ?? 0) 日"
     }
     
+    @State private var title: String = "a d s"
     @State private var text: String = "saddas d asd as ads"
     @State private var wordCount: Int = 0
     @State private var aaa = 0.0
@@ -28,41 +31,83 @@ struct DayTextView: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
-        
         ZStack(alignment: .bottomTrailing) {
 //            ScrollView {
-            if #available(iOS 16.0, *) {
-                TextEditor(text: $text)
-                    .onChange(of: text) { value in
-                        let words = text.split { $0 == " " || $0.isNewline }
-                        self.wordCount = words.count
+            
+            VStack {
+                ScrollView {
+                    TextField("标题", text: $title)
+                        .font(.title2)
+                        .padding([.leading, .trailing], 10)
+                    
+                    if #available(iOS 16.0, *) {
+                        TextEditor(text: $text)
+                            .onChange(of: text) { value in
+        //                        let words = text.split { $0 == " " || $0.isNewline }
+        //                        self.wordCount = words.count
+                                self.wordCount = text.count
+                            }
+                            .autocapitalization(.none)
+                            .disableAutocorrection(true)
+                            .padding(5)
+                            .scrollDismissesKeyboard(.interactively)
+                    } else {
+                        TextEditor(text: $text)
+                            .onChange(of: text) { value in
+                                let words = text.split { $0 == " " || $0.isNewline }
+                                self.wordCount = words.count
+                            }
+                            .autocapitalization(.none)
+                            .disableAutocorrection(true)
+                            .lineSpacing(5)
                     }
-                    .autocapitalization(.none)
-                    .disableAutocorrection(true)
-                    .padding(5)
-                    .lineSpacing(5)
-                    .scrollDismissesKeyboard(.interactively)
-            } else {
-                TextEditor(text: $text)
-                    .onChange(of: text) { value in
-                        let words = text.split { $0 == " " || $0.isNewline }
-                        self.wordCount = words.count
-                    }
-                    .autocapitalization(.none)
-                    .disableAutocorrection(true)
-                    .padding(5)
-                    .lineSpacing(5)
+                }
+                .padding(15)
             }
 //            }
-
-
-            Text("\(wordCount) 字数")
-                .font(.headline)
-                .foregroundColor(.secondary)
-                .padding()
+        
+            
+            
+            
+//            HighlightedTextEditor(text: $text, highlightRules: .markdown)
+//
+//                .onCommit {
+//                    print("onCommit")
+//                }
+//                .onEditingChanged {
+//                    print("editing changed")
+//                }
+//                .onTextChange {
+//                    print("latest text val", $0)
+//                }
+//                .onSelectionChange { (range: NSRange) in
+//                    print(range)
+//                }
+////                .introspect { editor in
+////                    // access underlying UITextView or NSTextView
+////                    editor.textView.backgroundColor = .green
+////                }
+//                .autocapitalization(.none)
+//                .disableAutocorrection(false)
+//                .padding(5)
+//                .lineSpacing(5)
+            
+            
+            VStack(alignment: .trailing, spacing: 2) {
+                Text("\(wordCount) 字数")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .padding([.trailing], 5)
+                
+                Text("\(record.wrappedCreateDate.formatted(date: .abbreviated, time: .omitted)) 创建日期")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .padding([.trailing], 5)
+            }
         }
         
         .navigationTitle("\(dateDescription)")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: addItem) {
@@ -76,6 +121,7 @@ struct DayTextView: View {
         }
         .onAppear {
             text = record.wrappedText
+            title = record.wrappedTitle
         }
         .onReceive(timer) { time in
             guard isActive else { return }
@@ -94,7 +140,9 @@ struct DayTextView: View {
     
     func save() {
         viewContext.performAndWait {
+            record.title = title
             record.text = text
+//            record.updateTitle(title: title, text: text)
             try? viewContext.save()
         }
     }

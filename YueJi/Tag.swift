@@ -23,7 +23,7 @@ public class Tags: ObservableObject {
         } else {
             tags.append(Tag.noneTag)
             tags.append(Tag.allTag)
-            tags.append(Tag(title: "日记", color: Tag.tagColors.randomElement() ?? Color.black))
+            tags.append(Tag.journalTag)
             tags.append(Tag(title: "1", color: Tag.tagColors.randomElement() ?? Color.black))
             tags.append(Tag(title: "标s签2", color: Tag.tagColors.randomElement() ?? Color.black))
             tags.append(Tag(title: "标签4", color: Tag.tagColors.randomElement() ?? Color.black))
@@ -90,6 +90,7 @@ public class Tag: NSObject, Identifiable, Codable, NSSecureCoding {
     static let noneTag = Tag(title: "无", color: .indigo)
     static let allTag = Tag(title: "全部", color: .mint)
     static let addTag = Tag(title: "添加", color: .cyan)
+    static let journalTag = Tag(title: "日记", color: .accentColor)
     
     public var id = UUID()
     public var title: String

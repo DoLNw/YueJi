@@ -7,6 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9D1B7D912925DC1B00EB8941 /* HighlightedTextEditor in Frameworks */ = {isa = PBXBuildFile; productRef = 9D1B7D902925DC1B00EB8941 /* HighlightedTextEditor */; };
+		9D1B7D9C2927177200EB8941 /* RichTextKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9D1B7D9B2927177200EB8941 /* RichTextKit */; };
+		9D1B7DAE29271D0200EB8941 /* DemoUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1B7DAA29271D0100EB8941 /* DemoUrl.swift */; };
+		9D1B7DAF29271D0200EB8941 /* DemoSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1B7DAB29271D0100EB8941 /* DemoSection.swift */; };
+		9D1B7DB029271D0200EB8941 /* DemoToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1B7DAC29271D0200EB8941 /* DemoToolbar.swift */; };
+		9D1B7DB329271D0A00EB8941 /* AboutScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1B7DB229271D0A00EB8941 /* AboutScreen.swift */; };
+		9D1B7DBA29271D1C00EB8941 /* EditorTopToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1B7DB429271D1C00EB8941 /* EditorTopToolbar.swift */; };
+		9D1B7DBB29271D1C00EB8941 /* EditorScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1B7DB529271D1C00EB8941 /* EditorScreen.swift */; };
+		9D1B7DBC29271D1C00EB8941 /* EditorMidToolbarswift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1B7DB629271D1C00EB8941 /* EditorMidToolbarswift.swift */; };
+		9D1B7DBE29271D1C00EB8941 /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1B7DB829271D1C00EB8941 /* MainMenu.swift */; };
+		9D1B7DBF29271D1C00EB8941 /* EditorBottomToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1B7DB929271D1C00EB8941 /* EditorBottomToolbar.swift */; };
+		9D1B7DC129271D7600EB8941 /* Image+Demo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1B7DC029271D7600EB8941 /* Image+Demo.swift */; };
+		9D1B7DC329271E0000EB8941 /* ContentView1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1B7DC229271E0000EB8941 /* ContentView1.swift */; };
+		9D1B7DC829279BCD00EB8941 /* AddNewRecordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1B7DC729279BCD00EB8941 /* AddNewRecordView.swift */; };
 		9D4988DB2917F5650079D3E1 /* YueJiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4988DA2917F5650079D3E1 /* YueJiApp.swift */; };
 		9D4988DD2917F5650079D3E1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4988DC2917F5650079D3E1 /* ContentView.swift */; };
 		9D4988DF2917F5650079D3E1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D4988DE2917F5650079D3E1 /* Assets.xcassets */; };
@@ -25,6 +39,18 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9D1B7DAA29271D0100EB8941 /* DemoUrl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DemoUrl.swift; sourceTree = "<group>"; };
+		9D1B7DAB29271D0100EB8941 /* DemoSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DemoSection.swift; sourceTree = "<group>"; };
+		9D1B7DAC29271D0200EB8941 /* DemoToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DemoToolbar.swift; sourceTree = "<group>"; };
+		9D1B7DB229271D0A00EB8941 /* AboutScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutScreen.swift; sourceTree = "<group>"; };
+		9D1B7DB429271D1C00EB8941 /* EditorTopToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditorTopToolbar.swift; sourceTree = "<group>"; };
+		9D1B7DB529271D1C00EB8941 /* EditorScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditorScreen.swift; sourceTree = "<group>"; };
+		9D1B7DB629271D1C00EB8941 /* EditorMidToolbarswift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditorMidToolbarswift.swift; sourceTree = "<group>"; };
+		9D1B7DB829271D1C00EB8941 /* MainMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
+		9D1B7DB929271D1C00EB8941 /* EditorBottomToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditorBottomToolbar.swift; sourceTree = "<group>"; };
+		9D1B7DC029271D7600EB8941 /* Image+Demo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Image+Demo.swift"; sourceTree = "<group>"; };
+		9D1B7DC229271E0000EB8941 /* ContentView1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView1.swift; sourceTree = "<group>"; };
+		9D1B7DC729279BCD00EB8941 /* AddNewRecordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewRecordView.swift; sourceTree = "<group>"; };
 		9D4988D72917F5650079D3E1 /* YueJi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YueJi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D4988DA2917F5650079D3E1 /* YueJiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YueJiApp.swift; sourceTree = "<group>"; };
 		9D4988DC2917F5650079D3E1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -49,16 +75,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D1B7D9C2927177200EB8941 /* RichTextKit in Frameworks */,
+				9D1B7D912925DC1B00EB8941 /* HighlightedTextEditor in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9D1B7DC52927213E00EB8941 /* New Group */ = {
+			isa = PBXGroup;
+			children = (
+				9D1B7DB229271D0A00EB8941 /* AboutScreen.swift */,
+				9D1B7DB929271D1C00EB8941 /* EditorBottomToolbar.swift */,
+				9D1B7DC229271E0000EB8941 /* ContentView1.swift */,
+				9D1B7DB629271D1C00EB8941 /* EditorMidToolbarswift.swift */,
+				9D1B7DB529271D1C00EB8941 /* EditorScreen.swift */,
+				9D1B7DB429271D1C00EB8941 /* EditorTopToolbar.swift */,
+				9D1B7DB829271D1C00EB8941 /* MainMenu.swift */,
+				9D1B7DAB29271D0100EB8941 /* DemoSection.swift */,
+				9D1B7DAC29271D0200EB8941 /* DemoToolbar.swift */,
+				9D1B7DAA29271D0100EB8941 /* DemoUrl.swift */,
+				9D1B7DC029271D7600EB8941 /* Image+Demo.swift */,
+			);
+			name = "New Group";
+			sourceTree = "<group>";
+		};
 		9D4988CE2917F5650079D3E1 = {
 			isa = PBXGroup;
 			children = (
 				9D4988D92917F5650079D3E1 /* YueJi */,
+				9D1B7DC52927213E00EB8941 /* New Group */,
 				9D4988D82917F5650079D3E1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -79,6 +126,7 @@
 				9D4988DA2917F5650079D3E1 /* YueJiApp.swift */,
 				9D4988FA2918DD610079D3E1 /* StaticProperties.swift */,
 				9D4988DC2917F5650079D3E1 /* ContentView.swift */,
+				9D1B7DC729279BCD00EB8941 /* AddNewRecordView.swift */,
 				9DC8DB3A291D251E0074F3E7 /* EditTagView.swift */,
 				9DC8DB36291B31340074F3E7 /* MonthCateView.swift */,
 				9DC8DB38291B3A390074F3E7 /* DayTextView.swift */,
@@ -118,6 +166,10 @@
 			dependencies = (
 			);
 			name = YueJi;
+			packageProductDependencies = (
+				9D1B7D902925DC1B00EB8941 /* HighlightedTextEditor */,
+				9D1B7D9B2927177200EB8941 /* RichTextKit */,
+			);
 			productName = YueJi;
 			productReference = 9D4988D72917F5650079D3E1 /* YueJi.app */;
 			productType = "com.apple.product-type.application";
@@ -146,6 +198,11 @@
 				Base,
 			);
 			mainGroup = 9D4988CE2917F5650079D3E1;
+			packageReferences = (
+				9D1B7D8F2925DC1B00EB8941 /* XCRemoteSwiftPackageReference "HighlightedTextEditor" */,
+				9D1B7D9A2927177200EB8941 /* XCRemoteSwiftPackageReference "RichTextKit" */,
+				9D1B7DC62927259900EB8941 /* XCRemoteSwiftPackageReference "RichEditorView" */,
+			);
 			productRefGroup = 9D4988D82917F5650079D3E1 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -172,18 +229,30 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D1B7DBB29271D1C00EB8941 /* EditorScreen.swift in Sources */,
 				9D4988F92918AC7E0079D3E1 /* Record+CoreDataProperties.swift in Sources */,
 				9D4988F52918A9120079D3E1 /* Tag.swift in Sources */,
+				9D1B7DC829279BCD00EB8941 /* AddNewRecordView.swift in Sources */,
+				9D1B7DAE29271D0200EB8941 /* DemoUrl.swift in Sources */,
 				9DC8DB39291B3A390074F3E7 /* DayTextView.swift in Sources */,
+				9D1B7DB329271D0A00EB8941 /* AboutScreen.swift in Sources */,
+				9D1B7DB029271D0200EB8941 /* DemoToolbar.swift in Sources */,
 				9D4988E72917F5650079D3E1 /* YueJi.xcdatamodeld in Sources */,
 				9D4988E42917F5650079D3E1 /* Persistence.swift in Sources */,
 				9D4988F82918AC7E0079D3E1 /* Record+CoreDataClass.swift in Sources */,
+				9D1B7DBF29271D1C00EB8941 /* EditorBottomToolbar.swift in Sources */,
+				9D1B7DBC29271D1C00EB8941 /* EditorMidToolbarswift.swift in Sources */,
+				9D1B7DC329271E0000EB8941 /* ContentView1.swift in Sources */,
+				9D1B7DBE29271D1C00EB8941 /* MainMenu.swift in Sources */,
+				9D1B7DC129271D7600EB8941 /* Image+Demo.swift in Sources */,
 				9D4988DD2917F5650079D3E1 /* ContentView.swift in Sources */,
 				9DC8DB3B291D251E0074F3E7 /* EditTagView.swift in Sources */,
 				9D4988F32917F5E00079D3E1 /* ContentViewExample.swift in Sources */,
 				9D4988FB2918DD610079D3E1 /* StaticProperties.swift in Sources */,
 				9DAC3EC5291A3BC20047935E /* Color+Codable.swift in Sources */,
+				9D1B7DAF29271D0200EB8941 /* DemoSection.swift in Sources */,
 				9D4988DB2917F5650079D3E1 /* YueJiApp.swift in Sources */,
+				9D1B7DBA29271D1C00EB8941 /* EditorTopToolbar.swift in Sources */,
 				9DC8DB37291B31340074F3E7 /* MonthCateView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -385,6 +454,46 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9D1B7D8F2925DC1B00EB8941 /* XCRemoteSwiftPackageReference "HighlightedTextEditor" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://gitee.com/JiaChengCC/HighlightedTextEditor";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+		9D1B7D9A2927177200EB8941 /* XCRemoteSwiftPackageReference "RichTextKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://gitee.com/JiaChengCC/RichTextKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.2;
+			};
+		};
+		9D1B7DC62927259900EB8941 /* XCRemoteSwiftPackageReference "RichEditorView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://gitee.com/JiaChengCC/RichEditorView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9D1B7D902925DC1B00EB8941 /* HighlightedTextEditor */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9D1B7D8F2925DC1B00EB8941 /* XCRemoteSwiftPackageReference "HighlightedTextEditor" */;
+			productName = HighlightedTextEditor;
+		};
+		9D1B7D9B2927177200EB8941 /* RichTextKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9D1B7D9A2927177200EB8941 /* XCRemoteSwiftPackageReference "RichTextKit" */;
+			productName = RichTextKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		9D4988E52917F5650079D3E1 /* YueJi.xcdatamodeld */ = {

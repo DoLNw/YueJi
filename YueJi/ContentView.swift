@@ -25,7 +25,7 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Record.createDate, ascending: false)],
+        sortDescriptors: [NSSortDescriptor(keyPath: \Record.cateDate, ascending: false)],
         animation: .default)
     private var records: FetchedResults<Record>
     private var cateAndFilteredRecords: [Int: [Int: [Record]]] {
@@ -39,17 +39,17 @@ struct ContentView: View {
                 continue
             }
             
-            let components = Calendar.current.dateComponents([.year, .month], from: record.wrappedCreateDate)
+            let components = Calendar.current.dateComponents([.year, .month], from: record.wrappedCateDate)
             
             if let _ = cateAndFilteredRecords1[components.year ?? 0] {
-            
+                
             } else {
                 cateAndFilteredRecords1[components.year ?? 0] = [Int: [Record]]()
-                if let _ = cateAndFilteredRecords1[components.year ?? 0]![components.month ?? 0] {
-                    
-                } else {
-                    cateAndFilteredRecords1[components.year ?? 0]![components.month ?? 0] = [Record]()
-                }
+            }
+            if let _ = cateAndFilteredRecords1[components.year ?? 0]![components.month ?? 0] {
+                
+            } else {
+                cateAndFilteredRecords1[components.year ?? 0]![components.month ?? 0] = [Record]()
             }
 
             cateAndFilteredRecords1[components.year ?? 0]![components.month ?? 0]?.append(record)
@@ -72,6 +72,9 @@ struct ContentView: View {
     @State private var selectedItem: String?
     @State private var addButtonAnimationAmount = 1.0
     let selectedChangeGemerator = UISelectionFeedbackGenerator()
+    
+    @State private var showAddNewRecord = false
+    
     
     let detector: CurrentValueSubject<CGFloat, Never>
     let publisher: AnyPublisher<CGFloat, Never>
@@ -96,7 +99,7 @@ struct ContentView: View {
                                 ForEach(dictYearRecords.value.sorted(by: {$0.key > $1.key}), id: \.key) { dictMonthRecords in
 //                                    NavigationLink(tag: "\(dictYearRecords.key)/\(dictMonthRecords.key)", selection: $selectedItem) {
                                     NavigationLink {
-                                        MonthCateView(year: dictYearRecords.key, month: dictMonthRecords.key, cateRecords: dictMonthRecords.value)
+                                        MonthCateView(year: dictYearRecords.key, month: dictMonthRecords.key, cateDates: dictMonthRecords.value, currentShowingTag: $currentShowingTag)
                                             .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
 //                                            .task {
 //                                                // 好像第三个的时候也会触发？是的，也会有问题啊。
@@ -145,7 +148,7 @@ struct ContentView: View {
 //                            Section("\(dictYearRecords.key)") {
 //                                ForEach(dictYearRecords.value.sorted(by: {$0.key > $1.key}), id: \.key) { dictMonthRecords in
 //                                    NavigationLink {
-//                                        MonthCateView(year: dictYearRecords.key, month: dictMonthRecords.key, cateRecords: dictMonthRecords.value)
+//                                        MonthCateView(year: dictYearRecords.key, month: dictMonthRecords.key, cateDates: dictMonthRecords.value)
 //                                            .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
 //                                            .task {
 //                                                self.normalContentView = false
@@ -155,7 +158,7 @@ struct ContentView: View {
 //
 //                                    } label: {
 ////                                        HStack {
-////        //                                    Text(record.wrappedCreateDate.formatted(date: .omitted, time: .shortened))
+////        //                                    Text(record.wrappedcateDate.formatted(date: .omitted, time: .shortened))
 ////        //                                        .font(.largeTitle)
 ////                                            Text("\(dictMonthRecords.key)")
 ////                                                .font(.largeTitle)
@@ -217,8 +220,8 @@ struct ContentView: View {
                                                                 RoundedRectangle(cornerRadius: 15)
                                                                     .stroke(Color.blue, lineWidth: 2)
                                                                     .scaleEffect(addButtonAnimationAmount)
-                                                                    .opacity(2 - addButtonAnimationAmount)
-                                                                    .animation(.easeOut(duration: 1), value: addButtonAnimationAmount)
+                                                                    .opacity(-2 * addButtonAnimationAmount + 3)
+                                                                    .animation(.easeOut(duration: addButtonAnimationAmount - 1), value: addButtonAnimationAmount)
                                                                     .offset(CGSize(width: 0, height: geo.size.height / 5))
                                                             )
                                                             .onTapGesture {
@@ -237,7 +240,7 @@ struct ContentView: View {
                                                                     currentShowingTag = tag
                                                                     
                                                                     if tag.title == Tag.addTag.title {
-                                                                        addButtonAnimationAmount = 2
+                                                                        addButtonAnimationAmount = 1.5
                                                                     } else {
                                                                         addButtonAnimationAmount = 1
                                                                     }
@@ -281,6 +284,10 @@ struct ContentView: View {
                             .sheet(isPresented: $showingTagEditor, content: {
                                 EditTagView(myTag: myTag, currentTappedTag: currentTappedTag)
                             })
+                            .sheet(isPresented: $showAddNewRecord, content: {
+                                AddNewRecordView(tag: currentShowingTag, year: 0, month: 0)
+                                    .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
+                            })
 
                         }
                         .frame(maxWidth: .infinity, maxHeight: 0.1 * fullView.size.height)
@@ -290,37 +297,60 @@ struct ContentView: View {
                 
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
-//                        EditButton()
-                        Button(action: show) {
+                        Button {
+                            self.showAddNewRecord = true
+                        } label: {
                             Label("Add Item", systemImage: "plus")
                         }
                     }
-                    ToolbarItem {
-                        Button(action: randomAddItem) {
-                            Label("Add Item", systemImage: "plus")
-                        }
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        EditButton()
                     }
                 }
-                .navigationTitle("月记")
-                // 注意，不能放在NavigationView下面，这样的话，只有一次了。
-//                .onReceive(NotificationCenter.default.publisher(for: UIApplication.will), perform: )
-//                .onAppear {
-//                    print("ContentView OnAppear")
-//                    childViewShown = true
-//                }
-//                .onDisappear {
-//                    print("ContentView onDisappear")
-//                    childViewShown = false
-//                }
+                .navigationTitle("月记：\(currentShowingTag.title)")
+                // 注意，NavigationView下面的onAppear，只有一次。
+                .onAppear {
+                    addCurrentItem()
+                }
             }
         }
         .ignoresSafeArea(edges: [.bottom, .leading, .trailing])
-
     }
     
     private func show() {
         withAnimation {
             showingTags.toggle()
+        }
+    }
+    
+    // 进入app的时候，查看当前是否有今天的日记标签的record，没有的话添加
+    private func addCurrentItem() {
+        let dateCompoments = Calendar.current.dateComponents([.year, .month, .day], from: Date.now)
+        let nowYear = dateCompoments.year ?? 0
+        let nowMonth = dateCompoments.month ?? 0
+        
+        for record in records {
+            let com = Calendar.current.dateComponents([.year, .month], from: record.wrappedCateDate)
+            if (com.year) == nowYear && (com.month) == nowMonth {
+                return
+            }
+        }
+        
+        withAnimation {
+            let newRecord = Record(context: viewContext)
+            newRecord.uuid = UUID()
+            newRecord.cateDate = Date.now
+            newRecord.modifiedDate = Date()
+            newRecord.text = ""
+            newRecord.title = newRecord.cateDate!.formatted(date: .omitted, time: .shortened)
+            newRecord.tags = [Tag.journalTag]
+            
+            do {
+                try viewContext.save()
+            } catch {
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
         }
     }
     
@@ -332,10 +362,10 @@ struct ContentView: View {
             dateComponent.year = Int.random(in: 1 ..< 3060)
             dateComponent.month = Int.random(in: 1 ... 12)
             dateComponent.day = Int.random(in: 1 ... 31)
-            newRecord.createDate = Calendar.current.date(from: dateComponent)
+            newRecord.cateDate = Calendar.current.date(from: dateComponent)
             newRecord.modifiedDate = Date()
             newRecord.text = "example text"
-            newRecord.title = newRecord.createDate!.formatted(date: .long, time: .shortened)
+            newRecord.title = newRecord.cateDate!.formatted(date: .long, time: .shortened)
             // 若下面这句没有成功，那么取出的时候，tag默认是无标签的
 //            if let tag = myTag.tags.randomElement() {
 //                newRecord.tags = [Tag(title: tag.title, color: tag.color)]

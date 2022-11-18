@@ -9,6 +9,7 @@ import SwiftUI
 
 struct EditTagView: View {
     @Environment(\.dismiss) private var dismiss
+    
     @State private var tagTitle = ""
     @State private var tagColor = Color.white
     
@@ -20,7 +21,10 @@ struct EditTagView: View {
             if currentTappedTag.title == Tag.addTag.title {
                 Form {
                     Section("待添加标签信息") {
-                        TextField("tagTitle", text: $tagTitle)
+                        HStack {
+                            Text("标签标题")
+                            TextField("tagTitle", text: $tagTitle)
+                        }
                         
                         RoundedRectangle(cornerRadius: 5)
                             .fill(tagColor)
