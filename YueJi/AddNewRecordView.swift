@@ -14,7 +14,8 @@ struct AddNewRecordView: View {
     @State private var cateDate: Date = Date()
     @State private var title: String = Date.now.formatted(date: .omitted, time: .shortened)
     let records: [Record]
-    let tag: Tag
+    @ObservedObject var myTag: Tags
+    let tagID: String
     var year: Int
     var month: Int
     
@@ -91,7 +92,7 @@ struct AddNewRecordView: View {
             print(tempDateCom.description)
             
             // tag是全部的话是进不来的，所以不需要验证
-            if record.tags?.first?.title == tag.title && tempDateCom.description == cateDateCom.description {
+            if record.wrappedTagIDs.first == tagID && tempDateCom.description == cateDateCom.description {
                 return true
             }
         }
@@ -113,7 +114,7 @@ struct AddNewRecordView: View {
             newRecord.createDate = Date.now
             newRecord.text = ""
             newRecord.title = title
-            newRecord.tags = [tag]
+            newRecord.tagIDs = [tagID]
             newRecord.wordCount = 0
             
             do {

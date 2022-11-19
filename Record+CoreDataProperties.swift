@@ -18,7 +18,7 @@ extension Record {
     @NSManaged public var cateDate: Date?
     @NSManaged public var createDate: Date?
     @NSManaged public var modifiedDate: Date?
-    @NSManaged public var tags: [Tag]?
+    @NSManaged public var tagIDs: [String]?
     @NSManaged public var text: String?
     @NSManaged public var title: String?
     @NSManaged public var uuid: UUID?
@@ -33,8 +33,8 @@ extension Record {
     public var wrappedModifiedDate: Date {
         modifiedDate ?? Date()
     }
-    public var wrappedTags: [Tag] {
-        tags ?? [Tag.noneTag]
+    public var wrappedTagIDs: [String] {
+        tagIDs ?? [Tag.noneTag.id.description]
     }
     public var wrappedText: String {
         text ?? "None text"

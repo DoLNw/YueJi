@@ -21,8 +21,8 @@ struct DayTextView: View {
         return "\(compnents.day ?? 0) 日"
     }
     
-    @State private var title: String = "a d s"
-    @State private var text: String = "saddas d asd as ads"
+    @State private var title: String = ""
+    @State private var text: String = ""
     @State private var wordCount: Int = 0
     @State private var aaa = 0.0
     

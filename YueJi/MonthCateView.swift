@@ -12,7 +12,8 @@ struct MonthCateView: View {
     let month: Int
     var cateRecords: [Record]
     
-    @Binding var currentShowingTag: Tag
+    @ObservedObject var myTag: Tags
+    @Binding var currentShowingTagID: String
     
     @Environment(\.managedObjectContext) private var viewContext
     
@@ -23,11 +24,12 @@ struct MonthCateView: View {
     
     @State private var readerMode = false
     
-    init(year: Int, month: Int, cateRecords: [Record], currentShowingTag: Binding<Tag>) {
+    init(year: Int, month: Int, cateRecords: [Record], myTag: Tags, currentShowingTagID: Binding<String>) {
         self.year = year
         self.month = month
         self.cateRecords = cateRecords
-        self._currentShowingTag = currentShowingTag
+        self._currentShowingTagID = currentShowingTagID
+        self.myTag = myTag
     }
     
 //    @FetchRequest(
@@ -58,8 +60,8 @@ struct MonthCateView: View {
                         } label: {
                             ZStack(alignment: .topLeading) {
                                 Circle()
-                                    .fill(record.wrappedTags[0].color)
-                                    .frame(width: 5, height: 5)
+                                    .fill(myTag.getTag(from: record.wrappedTagIDs.first!).color)
+                                    .frame(width: 7, height: 7)
                                 HStack {
                                     Text(record.wrappedCateDate, format: .dateTime.day())
                                         .font(.largeTitle)
@@ -95,7 +97,7 @@ struct MonthCateView: View {
             }
         }
         .sheet(isPresented: $showAddNewRecord, content: {
-            AddNewRecordView(records: cateRecords, tag: currentShowingTag, year: year, month: month)
+            AddNewRecordView(records: cateRecords, myTag: myTag, tagID: currentShowingTagID, year: year, month: month)
                 .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
         })
         .onAppear {
@@ -112,10 +114,12 @@ struct MonthCateView: View {
         .navigationTitle("\(year)年\(month)月")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    showAddNewRecord = true
-                } label: {
-                    Label("asd", systemImage: "plus")
+                if !(currentShowingTagID == Tag.noneTag.id.description || currentShowingTagID == Tag.addTag.id.description || currentShowingTagID == Tag.allTag.id.description) {
+                    Button {
+                        showAddNewRecord = true
+                    } label: {
+                        Label("asd", systemImage: "plus")
+                    }
                 }
             }
             ToolbarItem(placement: .navigationBarTrailing) {

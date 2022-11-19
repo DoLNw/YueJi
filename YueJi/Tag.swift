@@ -19,23 +19,34 @@ public class Tags: ObservableObject {
         if let data = UserDefaults.standard.data(forKey: Tags.saveKey) {
             if let decoded = try? JSONDecoder().decode([Tag].self, from: data) {
                 tags = decoded
+                
+                // 如果存在，为了让其他static Tag的id一样，只能赋值
+                Tag.noneTag = tags[0]
+                Tag.allTag = tags[1]
+                Tag.journalTag = tags[2]
+                Tag.addTag = tags.last!
             }
         } else {
             tags.append(Tag.noneTag)
             tags.append(Tag.allTag)
             tags.append(Tag.journalTag)
-            tags.append(Tag(title: "1", color: Tag.tagColors.randomElement() ?? Color.black))
-            tags.append(Tag(title: "标s签2", color: Tag.tagColors.randomElement() ?? Color.black))
+            tags.append(Tag(title: "标签1", color: Tag.tagColors.randomElement() ?? Color.black))
+            tags.append(Tag(title: "标签2", color: Tag.tagColors.randomElement() ?? Color.black))
+            tags.append(Tag(title: "标签3", color: Tag.tagColors.randomElement() ?? Color.black))
             tags.append(Tag(title: "标签4", color: Tag.tagColors.randomElement() ?? Color.black))
-            tags.append(Tag(title: "标签asdasdas5", color: Tag.tagColors.randomElement() ?? Color.black))
-            tags.append(Tag(title: "标签6", color: Tag.tagColors.randomElement() ?? Color.black))
-            tags.append(Tag(title: "标签asdasd7", color: Tag.tagColors.randomElement() ?? Color.black))
-            tags.append(Tag(title: "标签68", color: Tag.tagColors.randomElement() ?? Color.black))
+            tags.append(Tag(title: "标签5", color: Tag.tagColors.randomElement() ?? Color.black))
             tags.append(Tag.addTag)
             
             save()
         }
-        
+    }
+    
+    func getTag(from id: String) -> Tag {
+        if let tag = tags.first(where: { $0.id.description == id }) {
+            return tag
+        }
+            
+        return Tag.noneTag
     }
     
     func editTag(index: Int, title: String, color: Color) {
@@ -87,10 +98,10 @@ public class Tag: NSObject, Identifiable, Codable, NSSecureCoding {
     public static var supportsSecureCoding: Bool = true
     
     static let tagColors = [Color.yellow, .blue, .indigo, .cyan, .mint, .teal, .pink, .purple, .orange, .brown]
-    static let noneTag = Tag(title: "无", color: .indigo)
-    static let allTag = Tag(title: "全部", color: .mint)
-    static let addTag = Tag(title: "添加", color: .cyan)
-    static let journalTag = Tag(title: "日记", color: .accentColor)
+    static var noneTag = Tag(title: "无", color: .indigo)
+    static var allTag = Tag(title: "全部", color: .mint)
+    static var addTag = Tag(title: "添加", color: .accentColor)
+    static var journalTag = Tag(title: "日记", color: .orange)
     
     public var id = UUID()
     public var title: String

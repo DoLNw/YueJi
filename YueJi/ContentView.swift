@@ -32,7 +32,7 @@ struct ContentView: View {
         var filteredRecords1 = [Record]()
         
         for record in self.records {
-            if currentShowingTag.title == Tag.allTag.title || record.tags?.first?.title == currentShowingTag.title {
+            if currentShowingTagID == Tag.allTag.id.description || record.wrappedTagIDs.first == currentShowingTagID {
                 filteredRecords1.append(record)
             }
         }
@@ -46,7 +46,7 @@ struct ContentView: View {
         var cateAndFilteredRecords1 = [Int: [Int: [Record]]]()
         
         for record in self.filteredRecords {
-            if !(currentShowingTag.title == Tag.allTag.title || record.tags?.first?.title == currentShowingTag.title) {
+            if !(currentShowingTagID == Tag.allTag.id.description || record.wrappedTagIDs.first == currentShowingTagID) {
                 continue
             }
             
@@ -71,8 +71,8 @@ struct ContentView: View {
     
     @State private var showingTags = true
     @State private var showingTagEditor = false
-    @State private var currentTappedTag: Tag = Tag.noneTag
-    @State private var currentShowingTag = Tag.noneTag
+    @State private var currentTappedTagID = Tag.noneTag.id.description
+    @State private var currentShowingTagID = Tag.noneTag.id.description
     // 为了解决，在标签的滑动，然后跳入下一页的时候，标签都会左移，那么currentShowingTag会变化，导致出错。
     @State private var childViewShown = false
     @State private var selectedItem: String?
@@ -80,7 +80,6 @@ struct ContentView: View {
     let selectedChangeGemerator = UISelectionFeedbackGenerator()
     
     @State private var showAddNewRecord = false
-    
     
     let detector: CurrentValueSubject<CGFloat, Never>
     let publisher: AnyPublisher<CGFloat, Never>
@@ -105,7 +104,7 @@ struct ContentView: View {
                                 ForEach(dictYearRecords.value.sorted(by: {$0.key > $1.key}), id: \.key) { dictMonthRecords in
 //                                    NavigationLink(tag: "\(dictYearRecords.key)/\(dictMonthRecords.key)", selection: $selectedItem) {
                                     NavigationLink {
-                                        MonthCateView(year: dictYearRecords.key, month: dictMonthRecords.key, cateRecords: dictMonthRecords.value, currentShowingTag: $currentShowingTag)
+                                        MonthCateView(year: dictYearRecords.key, month: dictMonthRecords.key, cateRecords: dictMonthRecords.value, myTag: myTag, currentShowingTagID: $currentShowingTagID)
                                             .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
 //                                            .task {
 //                                                // 好像第三个的时候也会触发？是的，也会有问题啊。
@@ -231,7 +230,7 @@ struct ContentView: View {
                                                                     .offset(CGSize(width: 0, height: geo.size.height / 5))
                                                             )
                                                             .onTapGesture {
-                                                                currentTappedTag = tag
+                                                                currentTappedTagID = tag.id.description
                                                                 showingTagEditor = true
                                                                 print(tag.title)
                                                             }
@@ -241,9 +240,9 @@ struct ContentView: View {
 //                                                                print("geo.frame(in: .global).midX: \(geo.frame(in: .global).midX)")
 //                                                                print("fullView.size.width: \(fullView.size.width)")
                                                                 print("11scrollewViewGeo.frame(in: .global).minX: \(scrollewViewGeo.frame(in: .global).minX)")
-                                                                if currentShowingTag != tag {
+                                                                if currentShowingTagID != tag.id.description {
                                                                     selectedChangeGemerator.selectionChanged()
-                                                                    currentShowingTag = tag
+                                                                    currentShowingTagID = tag.id.description
                                                                     
                                                                     if tag.title == Tag.addTag.title {
                                                                         addButtonAnimationAmount = 1.5
@@ -267,7 +266,7 @@ struct ContentView: View {
                                                                     .offset(CGSize(width: 0, height: geo.size.height / 5))
                                                             )
                                                             .onTapGesture {
-                                                                currentTappedTag = tag
+                                                                currentTappedTagID = tag.id.description
                                                                 showingTagEditor = true
                                                                 print(tag.title)
                                                             }
@@ -288,10 +287,10 @@ struct ContentView: View {
                             
                             .padding([.leading, .trailing], 10)
                             .sheet(isPresented: $showingTagEditor, content: {
-                                EditTagView(myTag: myTag, currentTappedTag: currentTappedTag)
+                                EditTagView(myTag: myTag, currentTappedTagID: currentTappedTagID)
                             })
                             .sheet(isPresented: $showAddNewRecord, content: {
-                                AddNewRecordView(records: filteredRecords, tag: currentShowingTag, year: 0, month: 0)
+                                AddNewRecordView(records: filteredRecords, myTag: myTag, tagID: currentShowingTagID, year: 0, month: 0)
                                     .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
                             })
                         }
@@ -301,9 +300,8 @@ struct ContentView: View {
                 .ignoresSafeArea(edges: [.bottom, .leading, .trailing])
                 
                 .toolbar {
-                    
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        if !(currentShowingTag.title == Tag.noneTag.title || currentShowingTag.title == Tag.addTag.title || currentShowingTag.title == Tag.allTag.title) {
+                        if !(currentShowingTagID == Tag.noneTag.id.description || currentShowingTagID == Tag.addTag.id.description || currentShowingTagID == Tag.allTag.id.description) {
                             Button {
                                 self.showAddNewRecord = true
                             } label: {
@@ -315,7 +313,7 @@ struct ContentView: View {
                         EditButton()
                     }
                 }
-                .navigationTitle("月记：\(currentShowingTag.title)")
+                .navigationTitle("月记：\(myTag.getTag(from: currentShowingTagID).title)")
             }
             // 注意，NavigationView下面的onAppear，只有一次。
             .onAppear {
@@ -349,7 +347,7 @@ struct ContentView: View {
             newRecord.modifiedDate = Date()
             newRecord.text = ""
             newRecord.title = newRecord.cateDate!.formatted(date: .omitted, time: .shortened)
-            newRecord.tags = [Tag.journalTag]
+            newRecord.tagIDs = [Tag.journalTag.id.description]
             
             do {
                 try viewContext.save()
@@ -379,10 +377,10 @@ struct ContentView: View {
             // 0 是无标签，1是全部标签，最后一个是添加按钮
             var tag = myTag.tags[Int.random(in: 2 ..< myTag.tags.count-1)]
             
-            if currentShowingTag.title != Tag.allTag.title {
-                tag = currentShowingTag
-            }
-            newRecord.tags = [Tag(title: tag.title, color: tag.color)]
+//            if currentTappedTagID != Tag.allTag.id.description {
+//                tag = myTag
+//            }
+            newRecord.tagIDs = [tag.id.description]
             
             do {
                 try viewContext.save()

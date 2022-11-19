@@ -14,11 +14,11 @@ struct EditTagView: View {
     @State private var tagColor = Color.white
     
     @ObservedObject var myTag: Tags
-    var currentTappedTag: Tag
+    var currentTappedTagID: String
     
     var body: some View {
         Group {
-            if currentTappedTag.title == Tag.addTag.title {
+            if currentTappedTagID == Tag.addTag.id.description {
                 Form {
                     Section("待添加标签信息") {
                         HStack {
@@ -53,7 +53,7 @@ struct EditTagView: View {
                     
                     Section("按钮") {
                         Button("保存") {
-                            if let index = myTag.tags.firstIndex(where: { $0.title == currentTappedTag.title }) {
+                            if let index = myTag.tags.firstIndex(where: { $0.id.description == currentTappedTagID }) {
                                 myTag.editTag(index: index, title: tagTitle, color: tagColor)
                             }
                             
@@ -64,11 +64,12 @@ struct EditTagView: View {
             }
         }
         .onAppear {
-            tagTitle = currentTappedTag.title
-            tagColor = currentTappedTag.color
-            print(currentTappedTag.title)
+            let tag = myTag.getTag(from: currentTappedTagID)
+            tagTitle = tag.title
+            tagColor = tag.color
+            print(tag.title)
         }
-        .navigationTitle(currentTappedTag.title == Tag.addTag.title ? "添加标签" : "修改标签")
+        .navigationTitle(currentTappedTagID == Tag.addTag.id.description ? "添加标签" : "修改标签")
     }
 }
 
