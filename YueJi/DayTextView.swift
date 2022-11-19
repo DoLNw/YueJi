@@ -110,9 +110,9 @@ struct DayTextView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: addItem) {
-                    Label("asd", systemImage: "plus")
-                }
+//                Button(action: addItem) {
+//                    Label("asd", systemImage: "plus")
+//                }
             }
         }
         .onDisappear {

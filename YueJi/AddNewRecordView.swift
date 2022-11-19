@@ -13,9 +13,12 @@ struct AddNewRecordView: View {
     
     @State private var cateDate: Date = Date()
     @State private var title: String = Date.now.formatted(date: .omitted, time: .shortened)
+    let records: [Record]
     let tag: Tag
     var year: Int
     var month: Int
+    
+    @State private var showDupAlert = false
     
     private var startDate: Date {
         // 日期不限，从主页进来
@@ -30,7 +33,7 @@ struct AddNewRecordView: View {
         let startOfMonth = Calendar.current.date(from: components)!
         return startOfMonth
     }
-
+    
     private var endDate: Date {
         // 日期不限，从主页进来
         if year == 0 && month == 0 {
@@ -58,6 +61,7 @@ struct AddNewRecordView: View {
                         DatePicker("选择日期", selection: $cateDate, displayedComponents: .date)
                     } else {
                         DatePicker("选择日期", selection: $cateDate, in: startDate ... endDate, displayedComponents: .date)
+                            .datePickerStyle(WheelDatePickerStyle())
                     }
                 }
                 
@@ -67,13 +71,40 @@ struct AddNewRecordView: View {
                     } label: {
                         Text("保存")
                     }
-
                 }
             }
         }
+        .alert("已经有标签和日期重复的记录！", isPresented: $showDupAlert) {
+            Button("OK") { }
+        }
+//        message: {
+//            Text("已经有标签和日期重复的记录！")
+//        }
+    }
+    
+    func checkIsDupRecord() -> Bool {
+        let cateDateCom = Calendar.current.dateComponents([.year, .month, .day], from: cateDate)
+        print(cateDateCom.description)
+        
+        for record in records {
+            let tempDateCom = Calendar.current.dateComponents([.year, .month, .day], from: record.wrappedCateDate)
+            print(tempDateCom.description)
+            
+            // tag是全部的话是进不来的，所以不需要验证
+            if record.tags?.first?.title == tag.title && tempDateCom.description == cateDateCom.description {
+                return true
+            }
+        }
+        return false
     }
     
     func addNewItem() {
+        if checkIsDupRecord() {
+            
+            showDupAlert = true
+            return
+        }
+        
         withAnimation {
             let newRecord = Record(context: viewContext)
             newRecord.uuid = UUID()

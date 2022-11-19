@@ -10,7 +10,7 @@ import SwiftUI
 struct MonthCateView: View {
     let year: Int
     let month: Int
-    var cateDates: [Record]
+    var cateRecords: [Record]
     
     @Binding var currentShowingTag: Tag
     
@@ -21,12 +21,12 @@ struct MonthCateView: View {
     @State private var refreshID = true
     @State private var showAddNewRecord = false
     
-    @State private var showingMode = true
+    @State private var readerMode = false
     
-    init(year: Int, month: Int, cateDates: [Record], currentShowingTag: Binding<Tag>) {
+    init(year: Int, month: Int, cateRecords: [Record], currentShowingTag: Binding<Tag>) {
         self.year = year
         self.month = month
-        self.cateDates = cateDates
+        self.cateRecords = cateRecords
         self._currentShowingTag = currentShowingTag
     }
     
@@ -34,24 +34,24 @@ struct MonthCateView: View {
 //        sortDescriptors: [NSSortDescriptor(keyPath: \Record.cateDate, ascending: false)],
 //        animation: .default)
 //    private var records: FetchedResults<Record>
-//    private var cateDates: [Record] {
-//        var cateDates = [Record]()
+//    private var cateRecords: [Record] {
+//        var cateRecords = [Record]()
 //
 //        for record in records {
 //            let components = Calendar.current.dateComponents([.year, .month, .day], from: record.wrappedcateDate)
 //            if self.year == components.year && components.month == self.month {
-//                cateDates.append(record)
+//                cateRecords.append(record)
 //            }
 //        }
 //
-//        return cateDates
+//        return cateRecords
 //    }
     
     var body: some View {
         Group {
-            if showingMode {
+            if !readerMode {
                 List {
-                    ForEach(cateDates) { record in
+                    ForEach(cateRecords) { record in
                         NavigationLink {
                             DayTextView(record: record)
                                 .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
@@ -76,28 +76,35 @@ struct MonthCateView: View {
         //                self.refreshID = UUID()
         //            })
                 }
-                .sheet(isPresented: $showAddNewRecord, content: {
-                    AddNewRecordView(tag: currentShowingTag, year: year, month: month)
-                        .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
-                })
             } else {
                 List {
-                    ForEach(cateDates) { record in
-                        VStack {
-                            Text(record.wrappedTitle)
+                    ForEach(cateRecords) { record in
+                        Section {
                             Text(record.wrappedText)
+                        } header: {
+                            HStack {
+                                Text(record.wrappedTitle)
+                                Spacer()
+//                                Text(record.wrappedCateDate.formatted(date: .abbreviated, time: .omitted))
+                                Text(record.wrappedCateDate, format: .dateTime.day())
+                            }
                         }
                     }
                 }
+                .listStyle(.inset)
             }
         }
+        .sheet(isPresented: $showAddNewRecord, content: {
+            AddNewRecordView(records: cateRecords, tag: currentShowingTag, year: year, month: month)
+                .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
+        })
         .onAppear {
             refreshID.toggle()
             // 没必要，主页添加了
 //            addCurrentItem()
         }
 //        NavigationLink {
-//            DayTextView(record: cateDates.first!)
+//            DayTextView(record: cateRecords.first!)
 //                .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
 //        } label: {
 //            Text("Test Example")
@@ -113,9 +120,13 @@ struct MonthCateView: View {
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
-                    showingMode.toggle()
+                    readerMode.toggle()
                 } label: {
-                    Text("Mode")
+                    if readerMode {
+                        Image(systemName: "list.bullet.rectangle.portrait.fill")
+                    } else {
+                        Image(systemName: "list.bullet.rectangle.portrait")
+                    }
                 }
             }
         }
@@ -128,7 +139,7 @@ struct MonthCateView: View {
         let nowMonth = dateComponment.month ?? 0
         let nowDay = dateComponment.day ?? 0
         if nowYear == year && nowMonth == month {
-            for record in cateDates {
+            for record in cateRecords {
                 let com = Calendar.current.dateComponents([.day], from: record.wrappedCateDate)
                 if (com.day ?? 0) == nowDay {
                     return
@@ -157,7 +168,7 @@ struct MonthCateView: View {
     
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
-//            offsets.map { records[$0] }.forEach(viewContext.delete)
+            offsets.map { cateRecords[$0] }.forEach(viewContext.delete)
 
             do {
                 try viewContext.save()

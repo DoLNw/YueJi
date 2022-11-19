@@ -28,13 +28,24 @@ struct ContentView: View {
         sortDescriptors: [NSSortDescriptor(keyPath: \Record.cateDate, ascending: false)],
         animation: .default)
     private var records: FetchedResults<Record>
+    private var filteredRecords: [Record] {
+        var filteredRecords1 = [Record]()
+        
+        for record in self.records {
+            if currentShowingTag.title == Tag.allTag.title || record.tags?.first?.title == currentShowingTag.title {
+                filteredRecords1.append(record)
+            }
+        }
+        
+        return filteredRecords1
+    }
     private var cateAndFilteredRecords: [Int: [Int: [Record]]] {
         // 当前页面不在自己这里，就不要更新了，太麻烦了，那会不会后面一个层级删除了一个，这里还没更新？到时候再解决吧
         // 否则，navigationcontroller把一个push进去的时候，当前的tag会改变
         // 正好用normalContentView判断
         var cateAndFilteredRecords1 = [Int: [Int: [Record]]]()
         
-        for record in records {
+        for record in self.filteredRecords {
             if !(currentShowingTag.title == Tag.allTag.title || record.tags?.first?.title == currentShowingTag.title) {
                 continue
             }
@@ -55,11 +66,6 @@ struct ContentView: View {
             cateAndFilteredRecords1[components.year ?? 0]![components.month ?? 0]?.append(record)
         }
         
-        for aa in cateAndFilteredRecords1 {
-            for bb in aa.value {
-                print(bb.value.count)
-            }
-        }
         return cateAndFilteredRecords1
     }
     
@@ -99,7 +105,7 @@ struct ContentView: View {
                                 ForEach(dictYearRecords.value.sorted(by: {$0.key > $1.key}), id: \.key) { dictMonthRecords in
 //                                    NavigationLink(tag: "\(dictYearRecords.key)/\(dictMonthRecords.key)", selection: $selectedItem) {
                                     NavigationLink {
-                                        MonthCateView(year: dictYearRecords.key, month: dictMonthRecords.key, cateDates: dictMonthRecords.value, currentShowingTag: $currentShowingTag)
+                                        MonthCateView(year: dictYearRecords.key, month: dictMonthRecords.key, cateRecords: dictMonthRecords.value, currentShowingTag: $currentShowingTag)
                                             .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
 //                                            .task {
 //                                                // 好像第三个的时候也会触发？是的，也会有问题啊。
@@ -205,7 +211,7 @@ struct ContentView: View {
                                                     .padding(EdgeInsets(top: 10, leading: 20, bottom: 10, trailing: 20))
                                                     .opacity(0)
                                                     .frame(minWidth: fullView.size.width / 4)
-
+                                                    
                                                 GeometryReader { geo in
                                                     if (scrollewViewGeo.frame(in: .global).minX > 0 && geo.frame(in: .global).midX >= fullView.size.width / 3 && geo.frame(in: .global).midX <= fullView.size.width / 3 * 2) {
                                                         Text("\(tag.title)")
@@ -285,10 +291,9 @@ struct ContentView: View {
                                 EditTagView(myTag: myTag, currentTappedTag: currentTappedTag)
                             })
                             .sheet(isPresented: $showAddNewRecord, content: {
-                                AddNewRecordView(tag: currentShowingTag, year: 0, month: 0)
+                                AddNewRecordView(records: filteredRecords, tag: currentShowingTag, year: 0, month: 0)
                                     .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
                             })
-
                         }
                         .frame(maxWidth: .infinity, maxHeight: 0.1 * fullView.size.height)
                     }
@@ -296,11 +301,14 @@ struct ContentView: View {
                 .ignoresSafeArea(edges: [.bottom, .leading, .trailing])
                 
                 .toolbar {
+                    
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button {
-                            self.showAddNewRecord = true
-                        } label: {
-                            Label("Add Item", systemImage: "plus")
+                        if !(currentShowingTag.title == Tag.noneTag.title || currentShowingTag.title == Tag.addTag.title || currentShowingTag.title == Tag.allTag.title) {
+                            Button {
+                                self.showAddNewRecord = true
+                            } label: {
+                                Label("Add Item", systemImage: "plus")
+                            }
                         }
                     }
                     ToolbarItem(placement: .navigationBarTrailing) {
@@ -308,10 +316,10 @@ struct ContentView: View {
                     }
                 }
                 .navigationTitle("月记：\(currentShowingTag.title)")
-                // 注意，NavigationView下面的onAppear，只有一次。
-                .onAppear {
-                    addCurrentItem()
-                }
+            }
+            // 注意，NavigationView下面的onAppear，只有一次。
+            .onAppear {
+                addCurrentItem()
             }
         }
         .ignoresSafeArea(edges: [.bottom, .leading, .trailing])
@@ -326,12 +334,10 @@ struct ContentView: View {
     // 进入app的时候，查看当前是否有今天的日记标签的record，没有的话添加
     private func addCurrentItem() {
         let dateCompoments = Calendar.current.dateComponents([.year, .month, .day], from: Date.now)
-        let nowYear = dateCompoments.year ?? 0
-        let nowMonth = dateCompoments.month ?? 0
         
         for record in records {
-            let com = Calendar.current.dateComponents([.year, .month], from: record.wrappedCateDate)
-            if (com.year) == nowYear && (com.month) == nowMonth {
+            let com = Calendar.current.dateComponents([.year, .month, .day], from: record.wrappedCateDate)
+            if com.description == dateCompoments.description {
                 return
             }
         }
