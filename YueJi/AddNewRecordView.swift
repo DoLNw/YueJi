@@ -15,7 +15,7 @@ struct AddNewRecordView: View {
     @State private var title: String = Date.now.formatted(date: .omitted, time: .shortened)
     let records: [Record]
     @ObservedObject var myTag: Tags
-    let tagID: String
+    let tagID: UUID
     var year: Int
     var month: Int
     

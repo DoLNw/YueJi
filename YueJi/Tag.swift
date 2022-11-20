@@ -10,13 +10,12 @@ import SwiftUI
 
 // 给UserDefaults存储的
 public class Tags: ObservableObject {
-    static let saveKey = "tags"
     @Published public var tags: [Tag]
     
     init() {
         tags = []
         
-        if let data = UserDefaults.standard.data(forKey: Tags.saveKey) {
+        if let data = UserDefaults.standard.data(forKey: StaticProperties.USERDEFAULTS_TAGS) {
             if let decoded = try? JSONDecoder().decode([Tag].self, from: data) {
                 tags = decoded
                 
@@ -41,20 +40,24 @@ public class Tags: ObservableObject {
         }
     }
     
-    func getTag(from id: String) -> Tag {
-        if let tag = tags.first(where: { $0.id.description == id }) {
+    func getTag(from id: UUID) -> Tag {
+        if let tag = tags.first(where: { $0.id == id }) {
             return tag
         }
             
         return Tag.noneTag
     }
     
-    func editTag(index: Int, title: String, color: Color) {
-        objectWillChange.send()
-        tags[index].title = title
-        tags[index].color = color
+    func editTag(tagID: UUID, title: String, color: Color) {
+        if let index = tags.firstIndex(where: { $0.id == tagID }) {
+            objectWillChange.send()
+            tags[index].title = title
+            tags[index].color = color
+            
+            save()
+        }
         
-        save()
+        
     }
     
     func save() {
@@ -62,7 +65,7 @@ public class Tags: ObservableObject {
             if let decoded = try? JSONDecoder().decode([Tag].self, from: data) {
                 print(decoded.description)
             }
-            UserDefaults.standard.set(data, forKey: Tags.saveKey)
+            UserDefaults.standard.set(data, forKey: StaticProperties.USERDEFAULTS_TAGS)
         }
     }
     
@@ -71,11 +74,15 @@ public class Tags: ObservableObject {
 //        tags.append(tag)
         save()
     }
-    func delete(_ tag: Tag) {
-        if let index = tags.firstIndex(where: {$0.id == tag.id}) {
+    func delete(_ tagID: UUID) -> Bool {
+        if let index = tags.firstIndex(where: {$0.id == tagID}) {
             tags.remove(at: index)
             save()
+            
+            return true
         }
+        
+        return false
     }
 }
 
@@ -98,7 +105,7 @@ public class Tag: NSObject, Identifiable, Codable, NSSecureCoding {
     public static var supportsSecureCoding: Bool = true
     
     static let tagColors = [Color.yellow, .blue, .indigo, .cyan, .mint, .teal, .pink, .purple, .orange, .brown]
-    static var noneTag = Tag(title: "无", color: .indigo)
+    static var noneTag = Tag(title: "未归类", color: .indigo)
     static var allTag = Tag(title: "全部", color: .mint)
     static var addTag = Tag(title: "添加", color: .accentColor)
     static var journalTag = Tag(title: "日记", color: .orange)

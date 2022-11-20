@@ -9,15 +9,15 @@
 import UIKit
 import SwiftUI
 import CoreData
-import Combine
-
-struct ViewOffsetKey: PreferenceKey {
-    typealias Value = CGFloat
-    static var defaultValue = CGFloat.zero
-    static func reduce(value: inout Value, nextValue: () -> Value) {
-        value += nextValue()
-    }
-}
+//import Combine
+//
+//struct ViewOffsetKey: PreferenceKey {
+//    typealias Value = CGFloat
+//    static var defaultValue = CGFloat.zero
+//    static func reduce(value: inout Value, nextValue: () -> Value) {
+//        value += nextValue()
+//    }
+//}
 
 struct ContentView: View {
     @StateObject private var myTag = Tags()
@@ -32,7 +32,7 @@ struct ContentView: View {
         var filteredRecords1 = [Record]()
         
         for record in self.records {
-            if currentShowingTagID == Tag.allTag.id.description || record.wrappedTagIDs.first == currentShowingTagID {
+            if currentShowingTagID == Tag.allTag.id || record.wrappedTagIDs.first == currentShowingTagID {
                 filteredRecords1.append(record)
             }
         }
@@ -46,7 +46,7 @@ struct ContentView: View {
         var cateAndFilteredRecords1 = [Int: [Int: [Record]]]()
         
         for record in self.filteredRecords {
-            if !(currentShowingTagID == Tag.allTag.id.description || record.wrappedTagIDs.first == currentShowingTagID) {
+            if !(currentShowingTagID == Tag.allTag.id || record.wrappedTagIDs.first == currentShowingTagID) {
                 continue
             }
             
@@ -71,8 +71,8 @@ struct ContentView: View {
     
     @State private var showingTags = true
     @State private var showingTagEditor = false
-    @State private var currentTappedTagID = Tag.noneTag.id.description
-    @State private var currentShowingTagID = Tag.noneTag.id.description
+    @State private var currentTappedTagID: UUID?
+    @State private var currentShowingTagID = Tag.noneTag.id
     // 为了解决，在标签的滑动，然后跳入下一页的时候，标签都会左移，那么currentShowingTag会变化，导致出错。
     @State private var childViewShown = false
     @State private var selectedItem: String?
@@ -81,17 +81,17 @@ struct ContentView: View {
     
     @State private var showAddNewRecord = false
     
-    let detector: CurrentValueSubject<CGFloat, Never>
-    let publisher: AnyPublisher<CGFloat, Never>
+//    let detector: CurrentValueSubject<CGFloat, Never>
+//    let publisher: AnyPublisher<CGFloat, Never>
 
-    init() {
-        let detector = CurrentValueSubject<CGFloat, Never>(0)
-        self.publisher = detector
-            .debounce(for: .seconds(0), scheduler: DispatchQueue.main)
-            .first()
-            .eraseToAnyPublisher()
-        self.detector = detector
-    }
+//    init() {
+//        let detector = CurrentValueSubject<CGFloat, Never>(0)
+//        self.publisher = detector
+//            .debounce(for: .seconds(0), scheduler: DispatchQueue.main)
+//            .first()
+//            .eraseToAnyPublisher()
+//        self.detector = detector
+//    }
     
     var body: some View {
         GeometryReader { fullView in
@@ -134,17 +134,19 @@ struct ContentView: View {
                                         .onTapGesture {
 //                                            self.selectedItem = "\(dictYearRecords.key)/\(dictMonthRecords.key)"
                                         }
+                                        .swipeActions(edge: .leading) {
+                                            
+                                        }
                                     }
                                 }
-                                .onDelete(perform: deleteItems(offsets:))
-                                .background( GeometryReader {
-                                    Color.clear
-                                        .preference(key: ViewOffsetKey.self, value: -$0.frame(in: .global).origin.y)
-                                })
-                                .onPreferenceChange(ViewOffsetKey.self) { detector.send($0) }
-                                .onReceive(publisher) { a in
-                                    print("\(a)")
-                                }
+//                                .background( GeometryReader {
+//                                    Color.clear
+//                                        .preference(key: ViewOffsetKey.self, value: -$0.frame(in: .global).origin.y)
+//                                })
+//                                .onPreferenceChange(ViewOffsetKey.self) { detector.send($0) }
+//                                .onReceive(publisher) { a in
+//                                    print("\(a)")
+//                                }
                             }
 //                                .headerProminence(.increased)
                         }
@@ -230,9 +232,8 @@ struct ContentView: View {
                                                                     .offset(CGSize(width: 0, height: geo.size.height / 5))
                                                             )
                                                             .onTapGesture {
-                                                                currentTappedTagID = tag.id.description
+                                                                currentTappedTagID = tag.id
                                                                 showingTagEditor = true
-                                                                print(tag.title)
                                                             }
                                                             .rotation3DEffect(.degrees(-geo.frame(in: .global).midX + fullView.frame(in: .global).midX) / 8, axis: (x: 0, y: 1, z: 0))
                                                             .task {
@@ -240,9 +241,9 @@ struct ContentView: View {
 //                                                                print("geo.frame(in: .global).midX: \(geo.frame(in: .global).midX)")
 //                                                                print("fullView.size.width: \(fullView.size.width)")
                                                                 print("11scrollewViewGeo.frame(in: .global).minX: \(scrollewViewGeo.frame(in: .global).minX)")
-                                                                if currentShowingTagID != tag.id.description {
+                                                                if currentShowingTagID != tag.id {
                                                                     selectedChangeGemerator.selectionChanged()
-                                                                    currentShowingTagID = tag.id.description
+                                                                    currentShowingTagID = tag.id
                                                                     
                                                                     if tag.title == Tag.addTag.title {
                                                                         addButtonAnimationAmount = 1.5
@@ -266,7 +267,7 @@ struct ContentView: View {
                                                                     .offset(CGSize(width: 0, height: geo.size.height / 5))
                                                             )
                                                             .onTapGesture {
-                                                                currentTappedTagID = tag.id.description
+                                                                currentTappedTagID = tag.id
                                                                 showingTagEditor = true
                                                                 print(tag.title)
                                                             }
@@ -284,10 +285,10 @@ struct ContentView: View {
                                     }
                                 }
                             }
-                            
                             .padding([.leading, .trailing], 10)
-                            .sheet(isPresented: $showingTagEditor, content: {
-                                EditTagView(myTag: myTag, currentTappedTagID: currentTappedTagID)
+                            .sheet(item: $currentTappedTagID, content: { tagId in
+                                EditTagView(myTag: myTag, currentTappedTagID: tagId, records: records)
+                                    .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
                             })
                             .sheet(isPresented: $showAddNewRecord, content: {
                                 AddNewRecordView(records: filteredRecords, myTag: myTag, tagID: currentShowingTagID, year: 0, month: 0)
@@ -301,7 +302,7 @@ struct ContentView: View {
                 
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        if !(currentShowingTagID == Tag.noneTag.id.description || currentShowingTagID == Tag.addTag.id.description || currentShowingTagID == Tag.allTag.id.description) {
+                        if !(currentShowingTagID == Tag.noneTag.id || currentShowingTagID == Tag.addTag.id || currentShowingTagID == Tag.allTag.id) {
                             Button {
                                 self.showAddNewRecord = true
                             } label: {
@@ -347,7 +348,7 @@ struct ContentView: View {
             newRecord.modifiedDate = Date()
             newRecord.text = ""
             newRecord.title = newRecord.cateDate!.formatted(date: .omitted, time: .shortened)
-            newRecord.tagIDs = [Tag.journalTag.id.description]
+            newRecord.tagIDs = [Tag.journalTag.id]
             
             do {
                 try viewContext.save()
@@ -377,10 +378,10 @@ struct ContentView: View {
             // 0 是无标签，1是全部标签，最后一个是添加按钮
             var tag = myTag.tags[Int.random(in: 2 ..< myTag.tags.count-1)]
             
-//            if currentTappedTagID != Tag.allTag.id.description {
+//            if currentTappedTagID != Tag.allTag.id {
 //                tag = myTag
 //            }
-            newRecord.tagIDs = [tag.id.description]
+            newRecord.tagIDs = [tag.id]
             
             do {
                 try viewContext.save()

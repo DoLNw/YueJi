@@ -13,7 +13,7 @@ struct MonthCateView: View {
     var cateRecords: [Record]
     
     @ObservedObject var myTag: Tags
-    @Binding var currentShowingTagID: String
+    @Binding var currentShowingTagID: UUID
     
     @Environment(\.managedObjectContext) private var viewContext
     
@@ -21,10 +21,12 @@ struct MonthCateView: View {
     // 为了改动record后，能刷新该页面
     @State private var refreshID = true
     @State private var showAddNewRecord = false
+    @State private var showChangeTag = false
+    @State private var currentChangedRecord: Record?
     
-    @State private var readerMode = false
+    @AppStorage(StaticProperties.USERDEFAULTS_READERMMODE) var readerMode: Bool = false
     
-    init(year: Int, month: Int, cateRecords: [Record], myTag: Tags, currentShowingTagID: Binding<String>) {
+    init(year: Int, month: Int, cateRecords: [Record], myTag: Tags, currentShowingTagID: Binding<UUID>) {
         self.year = year
         self.month = month
         self.cateRecords = cateRecords
@@ -54,13 +56,14 @@ struct MonthCateView: View {
             if !readerMode {
                 List {
                     ForEach(cateRecords) { record in
+                        let currentTag = myTag.getTag(from: record.wrappedTagIDs.first!)
                         NavigationLink {
                             DayTextView(record: record)
                                 .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
                         } label: {
                             ZStack(alignment: .topLeading) {
                                 Circle()
-                                    .fill(myTag.getTag(from: record.wrappedTagIDs.first!).color)
+                                    .fill(currentTag.color)
                                     .frame(width: 7, height: 7)
                                 HStack {
                                     Text(record.wrappedCateDate, format: .dateTime.day())
@@ -70,6 +73,15 @@ struct MonthCateView: View {
                                     }
                                 }
                             }
+                        }
+                        .swipeActions(edge: .leading) {
+                            Button {
+                                currentChangedRecord = record
+                                self.showChangeTag = true
+                            } label: {
+                                Label("tag", systemImage: "tag")
+                            }
+                            .tint(currentTag.color)
                         }
                     }
                     .onDelete(perform: deleteItems(offsets:))
@@ -100,6 +112,10 @@ struct MonthCateView: View {
             AddNewRecordView(records: cateRecords, myTag: myTag, tagID: currentShowingTagID, year: year, month: month)
                 .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
         })
+        .sheet(item: $currentChangedRecord, content: { record in
+            ChangeTagView(refreshID: $refreshID, myTag: myTag, record: record)
+        })
+        
         .onAppear {
             refreshID.toggle()
             // 没必要，主页添加了
@@ -114,7 +130,7 @@ struct MonthCateView: View {
         .navigationTitle("\(year)年\(month)月")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                if !(currentShowingTagID == Tag.noneTag.id.description || currentShowingTagID == Tag.addTag.id.description || currentShowingTagID == Tag.allTag.id.description) {
+                if !(currentShowingTagID == Tag.noneTag.id || currentShowingTagID == Tag.addTag.id || currentShowingTagID == Tag.allTag.id) {
                     Button {
                         showAddNewRecord = true
                     } label: {

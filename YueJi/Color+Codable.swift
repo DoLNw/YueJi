@@ -144,3 +144,7 @@ extension Color {
         return (r, g, b, a)
     }
 }
+
+extension UUID: Identifiable {
+    public var id: UUID { return self }
+}

@@ -8,5 +8,6 @@
 import Foundation
 
 class StaticProperties {
-    static let TAGS = "tags"
+    static let USERDEFAULTS_TAGS = "tags"
+    static let USERDEFAULTS_READERMMODE = "readerMode"
 }

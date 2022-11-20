@@ -9,16 +9,19 @@ import SwiftUI
 
 struct EditTagView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.managedObjectContext) private var viewContext
     
     @State private var tagTitle = ""
     @State private var tagColor = Color.white
     
     @ObservedObject var myTag: Tags
-    var currentTappedTagID: String
+    var currentTappedTagID: UUID
+    
+    var records: FetchedResults<Record>?
     
     var body: some View {
         Group {
-            if currentTappedTagID == Tag.addTag.id.description {
+            if currentTappedTagID == Tag.addTag.id {
                 Form {
                     Section("待添加标签信息") {
                         HStack {
@@ -53,12 +56,32 @@ struct EditTagView: View {
                     
                     Section("按钮") {
                         Button("保存") {
-                            if let index = myTag.tags.firstIndex(where: { $0.id.description == currentTappedTagID }) {
-                                myTag.editTag(index: index, title: tagTitle, color: tagColor)
+                            myTag.editTag(tagID: currentTappedTagID, title: tagTitle, color: tagColor)
+                            
+                            dismiss()
+                        }
+                        Button("删除该标签", role: .destructive) {
+                            if myTag.delete(currentTappedTagID) {
+                                if let records = records {
+                                    for record in records {
+                                        if record.wrappedTagIDs.first == currentTappedTagID {
+                                            record.tagIDs?.removeLast()
+                                            record.tagIDs?.append(Tag.noneTag.id)
+                                        }
+                                    }
+                                }
+                                
+                                do {
+                                    try viewContext.save()
+                                } catch {
+                                    let nsError = error as NSError
+                                    fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                                }
                             }
                             
                             dismiss()
                         }
+                        .disabled(currentTappedTagID == Tag.noneTag.id || currentTappedTagID == Tag.allTag.id || currentTappedTagID == Tag.journalTag.id || currentTappedTagID == Tag.addTag.id)
                     }
                 }
             }
@@ -69,7 +92,7 @@ struct EditTagView: View {
             tagColor = tag.color
             print(tag.title)
         }
-        .navigationTitle(currentTappedTagID == Tag.addTag.id.description ? "添加标签" : "修改标签")
+        .navigationTitle(currentTappedTagID == Tag.addTag.id ? "添加标签" : "修改标签")
     }
 }
 
