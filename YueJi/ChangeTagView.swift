@@ -11,6 +11,8 @@ struct ChangeTagView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.managedObjectContext) private var viewContext
     
+    let selectedChangeGemerator = UISelectionFeedbackGenerator()
+    
     // 为了能让record改变后，更新
     @Binding var refreshID: Bool
     
@@ -32,16 +34,21 @@ struct ChangeTagView: View {
     }
     
     @State private var currentTagID: UUID = Tag.noneTag.id
+    @State private var preTagColor: Color = .black
+    @State private var preTagTitle = ""
+    @State private var sysImageName = "arrowshape.turn.up.forward"
     var record: Record
-    
-    let selectedChangeGemerator = UISelectionFeedbackGenerator()
+        
+    init(refreshID: Binding<Bool>, myTag: Tags, record: Record) {
+        self._refreshID = refreshID
+        self.myTag = myTag
+        self.record = record
+    }
     
     var body: some View {
-        
-        
-        return VStack(spacing: 5) {
+        VStack(spacing: 5) {
             List {
-                Section("改变为以下标签：") {
+                Section("更改为以下标签：") {
                     ForEach(filteredTags) { tag in
                         HStack {
                             Image(systemName: "tag")
@@ -50,7 +57,7 @@ struct ChangeTagView: View {
                                 ZStack {
                                     RoundedRectangle(cornerRadius: 5)
                                         .fill(tag.color)
-                                        .shadow(color: .secondary, radius: 7, x: 3, y: 3)
+                                        .shadow(color: .black.opacity(0.7), radius: 5, x: 3, y: 3)
                                         .overlay(
                                             RoundedRectangle(cornerRadius: 6)
                                                 .stroke(Color.blue, lineWidth: 3)
@@ -81,18 +88,18 @@ struct ChangeTagView: View {
             .listStyle(.grouped)
             
             HStack(alignment: .center) {
-                let preTag = myTag.getTag(from: record.wrappedTagIDs.first!)
                 let currentTag = myTag.getTag(from: currentTagID)
                 
-                Text("\(preTag.title)")
+                Text("\(preTagTitle)")
                     .padding()
                     .font(.title3)
-                    .background(preTag.color)
+                    .background(preTagColor)
                     .cornerRadius(15)
                     .padding([.leading], 30)
-                    .shadow(color: .secondary, radius: 7, x: 3, y: 3)
+                    .shadow(color: .black.opacity(0.7), radius: 5, x: 3, y: 3)
                 
                 Spacer()
+                VStack {
                     Button {
                         record.tagIDs = [currentTagID]
                         refreshID.toggle()
@@ -103,11 +110,30 @@ struct ChangeTagView: View {
                             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
                         }
                         
-                        dismiss()
+                        selectedChangeGemerator.selectionChanged()
+                        
+                        withAnimation {
+                            self.preTagTitle = currentTag.title
+                            self.preTagColor = currentTag.color
+                            self.sysImageName = "checkmark.circle"
+                        }
+                        
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+                            selectedChangeGemerator.selectionChanged()
+                            dismiss()
+                        }
                     } label: {
-                        Text("确定转换为")
+                        Label("", systemImage: sysImageName)
+                            .font(.largeTitle)
                     }
                     .disabled(currentTagID == record.wrappedTagIDs.first)
+                    
+                    if self.sysImageName != "arrowshape.turn.up.forward" {
+                        Text("更改成功")
+                            .foregroundColor(currentTag.color)
+                    }
+                }
+                
                 
                 Spacer()
                 
@@ -117,7 +143,7 @@ struct ChangeTagView: View {
                     .background(currentTag.color)
                     .cornerRadius(15)
                     .padding([.trailing], 30)
-                    .shadow(color: .secondary, radius: 7, x: 3, y: 3)
+                    .shadow(color: .black.opacity(0.7), radius: 5, x: 3, y: 3)
             }
             
         }
@@ -127,7 +153,11 @@ struct ChangeTagView: View {
             UITableViewCell.appearance().backgroundColor = .clear
             UITableView.appearance().tableFooterView = UIView()
             
-            currentTagID = record.wrappedTagIDs.first ?? Tag.noneTag.id
+            self.currentTagID = record.wrappedTagIDs.first ?? Tag.noneTag.id
+            
+            let tag = myTag.getTag(from: record.wrappedTagIDs.first!)
+            self.preTagColor = tag.color
+            self.preTagTitle = tag.title
         }
     }
 }

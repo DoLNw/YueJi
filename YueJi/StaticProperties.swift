@@ -11,4 +11,7 @@ class StaticProperties {
     static let USERDEFAULTS_TAGS = "tags"
     static let USERDEFAULTS_READERMMODE = "readerMode"
     static let USERFEFAULTS_FLATMODE = "flatMode"
+    static let USERFEFAULTS_SHOULDLOCK = "shouldLock"
 }
+
+

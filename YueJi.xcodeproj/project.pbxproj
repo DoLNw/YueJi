@@ -19,6 +19,7 @@
 		9D4988F92918AC7E0079D3E1 /* Record+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4988F72918AC7E0079D3E1 /* Record+CoreDataProperties.swift */; };
 		9D4988FB2918DD610079D3E1 /* StaticProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4988FA2918DD610079D3E1 /* StaticProperties.swift */; };
 		9D63AF502929C8EE00CC5DA0 /* ChangeTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D63AF4F2929C8EE00CC5DA0 /* ChangeTagView.swift */; };
+		9D63AF65292D022D00CC5DA0 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D63AF64292D022D00CC5DA0 /* SettingView.swift */; };
 		9DAC3EC5291A3BC20047935E /* Color+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DAC3EC4291A3BC20047935E /* Color+Codable.swift */; };
 		9DC8DB37291B31340074F3E7 /* MonthCateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC8DB36291B31340074F3E7 /* MonthCateView.swift */; };
 		9DC8DB39291B3A390074F3E7 /* DayTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC8DB38291B3A390074F3E7 /* DayTextView.swift */; };
@@ -40,6 +41,7 @@
 		9D4988F72918AC7E0079D3E1 /* Record+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Record+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
 		9D4988FA2918DD610079D3E1 /* StaticProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticProperties.swift; sourceTree = "<group>"; };
 		9D63AF4F2929C8EE00CC5DA0 /* ChangeTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeTagView.swift; sourceTree = "<group>"; };
+		9D63AF64292D022D00CC5DA0 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		9DAC3EC4291A3BC20047935E /* Color+Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Codable.swift"; sourceTree = "<group>"; };
 		9DC8DB36291B31340074F3E7 /* MonthCateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthCateView.swift; sourceTree = "<group>"; };
 		9DC8DB38291B3A390074F3E7 /* DayTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayTextView.swift; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				9D4988DA2917F5650079D3E1 /* YueJiApp.swift */,
 				9D4988FA2918DD610079D3E1 /* StaticProperties.swift */,
 				9D4988DC2917F5650079D3E1 /* ContentView.swift */,
+				9D63AF64292D022D00CC5DA0 /* SettingView.swift */,
 				9D63AF4F2929C8EE00CC5DA0 /* ChangeTagView.swift */,
 				9D1B7DC729279BCD00EB8941 /* AddNewRecordView.swift */,
 				9DC8DB3A291D251E0074F3E7 /* EditTagView.swift */,
@@ -185,6 +188,7 @@
 				9DC8DB39291B3A390074F3E7 /* DayTextView.swift in Sources */,
 				9D4988E72917F5650079D3E1 /* YueJi.xcdatamodeld in Sources */,
 				9D4988E42917F5650079D3E1 /* Persistence.swift in Sources */,
+				9D63AF65292D022D00CC5DA0 /* SettingView.swift in Sources */,
 				9D4988F82918AC7E0079D3E1 /* Record+CoreDataClass.swift in Sources */,
 				9D4988DD2917F5650079D3E1 /* ContentView.swift in Sources */,
 				9DC8DB3B291D251E0074F3E7 /* EditTagView.swift in Sources */,
@@ -324,6 +328,8 @@
 				DEVELOPMENT_TEAM = G4A24RZ5WH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = YueJi/Info.plist;
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "需要请求Face ID使用权限。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -353,6 +359,8 @@
 				DEVELOPMENT_TEAM = QXK2SWBXZ7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = YueJi/Info.plist;
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "需要请求Face ID使用权限。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
