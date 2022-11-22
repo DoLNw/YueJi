@@ -112,7 +112,7 @@ struct AddNewRecordView: View {
             newRecord.cateDate = cateDate
             newRecord.modifiedDate = Date.now
             newRecord.createDate = Date.now
-            newRecord.text = ""
+            newRecord.text = "目前没有内容"
             newRecord.title = title
             newRecord.tagIDs = [tagID]
             newRecord.wordCount = 0

@@ -6,19 +6,26 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct EditTagView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.managedObjectContext) private var viewContext
+
+    @State private var showConfirmDelete = false
     
     @State private var tagTitle = ""
     @State private var tagColor = Color.white
     
+    private var isSysTag: Bool {
+        return currentTappedTagID == Tag.noneTag.id || currentTappedTagID == Tag.allTag.id || currentTappedTagID == Tag.journalTag.id || currentTappedTagID == Tag.addTag.id
+    }
+
     @ObservedObject var myTag: Tags
     var currentTappedTagID: UUID
-    
+
     var records: FetchedResults<Record>?
-    
+
     var body: some View {
         Group {
             if currentTappedTagID == Tag.addTag.id {
@@ -28,17 +35,17 @@ struct EditTagView: View {
                             Text("标签标题")
                             TextField("tagTitle", text: $tagTitle)
                         }
-                        
+
                         RoundedRectangle(cornerRadius: 5)
                             .fill(tagColor)
-                        
+
                         ColorPicker("颜色拾取器", selection: $tagColor)
                     }
                     Section("按钮") {
                         Button("添加标签") {
                             let newTag = Tag(title: tagTitle, color: tagColor)
                             myTag.add(newTag)
-                            
+
                             dismiss()
                         }
                     }
@@ -47,45 +54,52 @@ struct EditTagView: View {
                 Form {
                     Section("修改标签信息") {
                         TextField("tagTitle", text: $tagTitle)
-                        
+                            .disabled(isSysTag)
+
                         RoundedRectangle(cornerRadius: 5)
                             .fill(tagColor)
-                        
+
                         ColorPicker("颜色拾取器", selection: $tagColor)
                     }
-                    
+
                     Section("按钮") {
                         Button("保存") {
                             myTag.editTag(tagID: currentTappedTagID, title: tagTitle, color: tagColor)
-                            
+
                             dismiss()
                         }
                         Button("删除该标签", role: .destructive) {
-                            if myTag.delete(currentTappedTagID) {
-                                if let records = records {
-                                    for record in records {
-                                        if record.wrappedTagIDs.first == currentTappedTagID {
-                                            record.tagIDs?.removeLast()
-                                            record.tagIDs?.append(Tag.noneTag.id)
-                                        }
-                                    }
-                                }
-                                
-                                do {
-                                    try viewContext.save()
-                                } catch {
-                                    let nsError = error as NSError
-                                    fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-                                }
-                            }
-                            
-                            dismiss()
+                            self.showConfirmDelete = true
                         }
-                        .disabled(currentTappedTagID == Tag.noneTag.id || currentTappedTagID == Tag.allTag.id || currentTappedTagID == Tag.journalTag.id || currentTappedTagID == Tag.addTag.id)
+                        .disabled(isSysTag)
                     }
                 }
             }
         }
+        .alert("确定删除吗？\n目前该操作不可撤销。", isPresented: $showConfirmDelete, actions: {
+            Button("删除", role: .destructive) {
+                if myTag.delete(currentTappedTagID) {
+                    if let records = records {
+                        for record in records {
+                            if record.wrappedTagIDs.first == currentTappedTagID {
+                                record.tagIDs?.removeLast()
+                                record.tagIDs?.append(Tag.noneTag.id)
+                            }
+                        }
+                    }
+
+                    do {
+                        try viewContext.save()
+                    } catch {
+                        let nsError = error as NSError
+                        fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                    }
+                }
+
+                dismiss()
+            }
+            Button("取消", role: .cancel) {}
+        })
         .onAppear {
             let tag = myTag.getTag(from: currentTappedTagID)
             tagTitle = tag.title

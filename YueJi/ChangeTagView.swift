@@ -15,57 +15,82 @@ struct ChangeTagView: View {
     @Binding var refreshID: Bool
     
     @ObservedObject var myTag: Tags
+    private var filteredTags: [Tag] {
+        var tags = [Tag]()
+        
+//        let recordTagID = record.tagIDs?.first
+        for tag in myTag.tags {
+//            if !(tag.id == recordTagID || tag.id == Tag.noneTag.id || tag.id == Tag.allTag.id || Tag.addTag.id == tag.id) {
+//                tags.append(tag)
+//            }
+            if !(tag.id == Tag.noneTag.id || tag.id == Tag.allTag.id || Tag.addTag.id == tag.id) {
+                tags.append(tag)
+            }
+        }
+        
+        return tags
+    }
+    
     @State private var currentTagID: UUID = Tag.noneTag.id
     var record: Record
     
     let selectedChangeGemerator = UISelectionFeedbackGenerator()
     
     var body: some View {
-        VStack(spacing: 5) {
+        
+        
+        return VStack(spacing: 5) {
             List {
                 Section("改变为以下标签：") {
-                    ForEach(myTag.tags) { tag in
+                    ForEach(filteredTags) { tag in
                         HStack {
                             Image(systemName: "tag")
                             
                             if tag.id == currentTagID {
-                                Text("\(tag.title)")
-                                    .font(.title3)
-                                    .padding([.top, .bottom], 10)
-                                    .background(tag.color)
-                                    .cornerRadius(15)
-                                    .shadow(color: .primary.opacity(0.5), radius: 7)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 15)
-                                            .stroke(Color.blue, lineWidth: 3)
-                                    )
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .fill(tag.color)
+                                        .shadow(color: .secondary, radius: 7, x: 3, y: 3)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 6)
+                                                .stroke(Color.blue, lineWidth: 3)
+                                        )
+                                    Text("\(tag.title)")
+                                        .font(.title3)
+                                }
                             } else {
-                                Text("\(tag.title)")
-                                    .font(.title3)
-                                    .padding([.top, .bottom], 10)
-                                    .background(tag.color)
-                                    .cornerRadius(15)
-                                    .onTapGesture {
-                                        selectedChangeGemerator.selectionChanged()
-                                        self.currentTagID = tag.id
-                                    }
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .fill(tag.color)
+                                        .onTapGesture {
+                                            selectedChangeGemerator.selectionChanged()
+                                            self.currentTagID = tag.id
+                                        }
+                                    Text("\(tag.title)")
+                                        .font(.title3)
+                                }
                             }
                         }
+                        .padding()
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
                     }
                 }
             }
+            .background(.clear)
             .listStyle(.grouped)
             
-            HStack {
+            HStack(alignment: .center) {
                 let preTag = myTag.getTag(from: record.wrappedTagIDs.first!)
                 let currentTag = myTag.getTag(from: currentTagID)
                 
                 Text("\(preTag.title)")
+                    .padding()
                     .font(.title3)
-                    .padding([.top, .bottom], 10)
                     .background(preTag.color)
                     .cornerRadius(15)
-                    .padding()
+                    .padding([.leading], 30)
+                    .shadow(color: .secondary, radius: 7, x: 3, y: 3)
                 
                 Spacer()
                     Button {
@@ -80,21 +105,28 @@ struct ChangeTagView: View {
                         
                         dismiss()
                     } label: {
-                        Text("确定转换")
+                        Text("确定转换为")
                     }
+                    .disabled(currentTagID == record.wrappedTagIDs.first)
                 
                 Spacer()
                 
                 Text("\(currentTag.title)")
                     .font(.title3)
-                    .padding([.top, .bottom], 10)
+                    .padding()
                     .background(currentTag.color)
                     .cornerRadius(15)
-                    .padding()
+                    .padding([.trailing], 30)
+                    .shadow(color: .secondary, radius: 7, x: 3, y: 3)
             }
+            
         }
         
         .onAppear {
+            UITableView.appearance().backgroundColor = .clear
+            UITableViewCell.appearance().backgroundColor = .clear
+            UITableView.appearance().tableFooterView = UIView()
+            
             currentTagID = record.wrappedTagIDs.first ?? Tag.noneTag.id
         }
     }
