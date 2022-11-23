@@ -25,7 +25,7 @@ struct ContentView: View {
         if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
             // it's possible, so go ahead and use it
             let reason = "We need to unlock your data."
-
+            
             context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, authenticationError in
                 // authentication has now completed
                 if success {
@@ -94,6 +94,8 @@ struct ContentView: View {
     
 //    @State private var flatMode: Bool = UserDefaults.standard.bool(forKey: StaticProperties.USERDEFAULTS_READERMMODE)
     @AppStorage(StaticProperties.USERDEFAULTS_READERMMODE) private var flatMode: Bool = false
+    @AppStorage(StaticProperties.USERDEFAULTS_ACCDAYS) private var accumulateDays = 0
+    @AppStorage(StaticProperties.USER_DEFAULTS_PREDATE) private var preDate: String = ""
     @State private var shouldLock: Bool = UserDefaults.standard.bool(forKey: StaticProperties.USERFEFAULTS_SHOULDLOCK)
     
     @State private var currentTappedTagID: UUID?
@@ -298,7 +300,7 @@ struct ContentView: View {
                                     ChangeTagView(refreshID: $refreshID, myTag: myTag, record: record)
                                 })
                                 .sheet(isPresented: $showSettingView, content: {
-                                    SettingView(shouldLock: $shouldLock, isUnlocked: $isUnlocked)
+                                    SettingView(shouldLock: $shouldLock, isUnlocked: $isUnlocked, accumulateDays: accumulateDays)
                                 })
                                 .onAppear {
                                     refreshID.toggle()
@@ -359,6 +361,12 @@ struct ContentView: View {
             .onAppear {
                 if shouldLock && !isUnlocked {
                     authenticate()
+                }
+                
+                let dateCompoments = Calendar.current.dateComponents([.year, .month, .day], from: Date.now)
+                if dateCompoments.description != preDate {
+                    accumulateDays += 1
+                    preDate = dateCompoments.description
                 }
                 
 //                flatMode = UserDefaults.standard.bool(forKey: StaticProperties.USERFEFAULTS_FLATMODE)
