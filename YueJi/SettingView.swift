@@ -30,10 +30,6 @@ struct SettingView: View {
         }
     }
     
-    func checkIfFaceIDValid() {
-        
-    }
-    
     func authenticate() {
         let context = LAContext()
         var error: NSError?
@@ -42,7 +38,7 @@ struct SettingView: View {
         if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
             // it's possible, so go ahead and use it
             let reason = "We need to unlock your data."
-
+            
             context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, authenticationError in
                 // authentication has now completed
                 if success {

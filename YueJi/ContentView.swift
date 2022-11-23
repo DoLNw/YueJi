@@ -92,7 +92,8 @@ struct ContentView: View {
     @State var refreshID = false
     @State private var currentChangedRecord: Record?
     
-    @State private var flatMode: Bool = UserDefaults.standard.bool(forKey: StaticProperties.USERDEFAULTS_READERMMODE)
+//    @State private var flatMode: Bool = UserDefaults.standard.bool(forKey: StaticProperties.USERDEFAULTS_READERMMODE)
+    @AppStorage(StaticProperties.USERDEFAULTS_READERMMODE) private var flatMode: Bool = false
     @State private var shouldLock: Bool = UserDefaults.standard.bool(forKey: StaticProperties.USERFEFAULTS_SHOULDLOCK)
     
     @State private var currentTappedTagID: UUID?
@@ -323,7 +324,7 @@ struct ContentView: View {
                             Button {
                                 selectedChangeGemerator.selectionChanged()
                                 self.flatMode.toggle()
-                                UserDefaults.standard.set(self.flatMode, forKey: StaticProperties.USERFEFAULTS_FLATMODE)
+//                                UserDefaults.standard.set(self.flatMode, forKey: StaticProperties.USERFEFAULTS_FLATMODE)
                             } label: {
                                 if self.flatMode {
                                     Label("flatMode", systemImage: "rectangle.fill.on.rectangle.fill")
@@ -360,7 +361,7 @@ struct ContentView: View {
                     authenticate()
                 }
                 
-                flatMode = UserDefaults.standard.bool(forKey: StaticProperties.USERFEFAULTS_FLATMODE)
+//                flatMode = UserDefaults.standard.bool(forKey: StaticProperties.USERFEFAULTS_FLATMODE)
                 shouldLock = UserDefaults.standard.bool(forKey: StaticProperties.USERFEFAULTS_SHOULDLOCK)
                 currentShowingTagID = Tag.allTag.id
                 addCurrentItem()

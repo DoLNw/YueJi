@@ -38,7 +38,7 @@ struct ChangeTagView: View {
     @State private var preTagTitle = ""
     @State private var sysImageName = "arrowshape.turn.up.forward"
     var record: Record
-        
+    
     init(refreshID: Binding<Bool>, myTag: Tags, record: Record) {
         self._refreshID = refreshID
         self.myTag = myTag

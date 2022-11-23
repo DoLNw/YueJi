@@ -12,7 +12,7 @@ struct MonthCateView: View {
     let month: Int
     var cateRecords: [Record]
     
-    let selectedChangeGemerator = UISelectionFeedbackGenerator()
+//    let selectedChangeGemerator = UISelectionFeedbackGenerator()
     
     @ObservedObject var myTag: Tags
     @Binding var currentShowingTagID: UUID
@@ -21,7 +21,6 @@ struct MonthCateView: View {
     
     @Environment(\.managedObjectContext) private var viewContext
     
-    private var didSave = NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave)
     // 为了改动record后，能刷新该页面
     @State private var refreshID = true
     @State private var showAddNewRecord = false
@@ -132,16 +131,16 @@ struct MonthCateView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 if !(currentShowingTagID == Tag.noneTag.id || currentShowingTagID == Tag.addTag.id || currentShowingTagID == Tag.allTag.id) {
                     Button {
-                        selectedChangeGemerator.selectionChanged()
+//                        selectedChangeGemerator.selectionChanged()
                         showAddNewRecord = true
                     } label: {
-                        Label("a添加", systemImage: "plus")
+                        Label("添加", systemImage: "plus")
                     }
                 }
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
-                    selectedChangeGemerator.selectionChanged()
+//                    selectedChangeGemerator.selectionChanged()
                     readerMode.toggle()
                     UserDefaults.standard.set(readerMode, forKey: StaticProperties.USERDEFAULTS_READERMMODE)
                 } label: {

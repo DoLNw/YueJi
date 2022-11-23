@@ -35,6 +35,7 @@ struct DayTextView: View {
                 VStack {
                     ScrollView {
                         TextField("标题", text: $title)
+                            .frame(width: geo.size.width)
                             .font(.title2)
                             .padding([.leading, .trailing], 10)
                         
