@@ -325,11 +325,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"YueJi/Preview Content\"";
-				DEVELOPMENT_TEAM = G4A24RZ5WH;
+				DEVELOPMENT_TEAM = QXK2SWBXZ7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YueJi/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "月记";
+				INFOPLIST_KEY_CFBundleDisplayName = "叶记";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "需要请求Face ID使用权限。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -342,7 +342,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.jcwang.YueJi12;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jcwang.JcwangYueJi;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -365,7 +365,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YueJi/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "月记";
+				INFOPLIST_KEY_CFBundleDisplayName = "叶记";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "需要请求Face ID使用权限。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -378,7 +378,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.jcwang.YueJi;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jcwang.JcwangYueJi;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;

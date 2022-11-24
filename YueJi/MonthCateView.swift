@@ -53,7 +53,8 @@ struct MonthCateView: View {
                                 
                                 HStack {
                                     HStack(spacing: 3) {
-                                        Text(record.wrappedCateDate, format: .dateTime.day())
+                                        let datecom = Calendar.current.dateComponents([.day], from: record.wrappedCateDate)
+                                        Text(String(format: "%02d", (datecom.day ?? 0)))
                                             .font(.title2)
                                         
                                         Text("日")

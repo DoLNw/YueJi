@@ -45,7 +45,7 @@ struct SettingView: View {
                 let nextMonth = (accumulateDays + 1) / 7 / 4 % 12
                 let nextWeek = (accumulateDays + 1) / 7 % 4
                 let nextDay = (accumulateDays + 1) % 7
-                Section("累计签到：\(year)年\(month)月\(week)周\(day)日") {
+                Section("累计签到：\(year)年\(month)月\(week)周\(day)天") {
                     HStack {
                         ForEach(0..<year, id: \.self) { index in
                             Image(systemName: "sun.max.fill")

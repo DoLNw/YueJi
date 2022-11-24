@@ -93,7 +93,7 @@ struct ContentView: View {
     @State private var currentChangedRecord: Record?
     
 //    @State private var flatMode: Bool = UserDefaults.standard.bool(forKey: StaticProperties.USERDEFAULTS_READERMMODE)
-    @AppStorage(StaticProperties.USERDEFAULTS_READERMMODE) private var flatMode: Bool = false
+    @AppStorage(StaticProperties.USERFEFAULTS_FLATMODE) private var flatMode: Bool = false
     @AppStorage(StaticProperties.USERDEFAULTS_ACCDAYS) private var accumulateDays = 0
     @AppStorage(StaticProperties.USER_DEFAULTS_PREDATE) private var preDate: String = ""
     @State private var shouldLock: Bool = UserDefaults.standard.bool(forKey: StaticProperties.USERFEFAULTS_SHOULDLOCK)
@@ -132,7 +132,8 @@ struct ContentView: View {
                                                             
                                                             HStack {
                                                                 HStack(spacing: 3) {
-                                                                    Text(record.wrappedCateDate, format: .dateTime.day())
+                                                                    let datecom = Calendar.current.dateComponents([.day], from: record.wrappedCateDate)
+                                                                    Text(String(format: "%02d", (datecom.day ?? 0)))
                                                                         .font(.title2)
                                                                     
                                                                     Text("日")
@@ -143,7 +144,7 @@ struct ContentView: View {
                                                                 .padding([.top, .bottom], 10)
                                                                 .padding([.trailing], 20)
                                                                 
-                                                                VStack(alignment: .leading, spacing: 15) {
+                                                                VStack(alignment: .leading, spacing: 5) {
                                                                     Text(record.wrappedTitle + (refreshID ? "" : ""))
     //                                                                    .foregroundColor(Color(UIColor.darkGray))
                                                                     Text(record.wrappedText)
@@ -344,7 +345,7 @@ struct ContentView: View {
                             }
                         }
                     }
-                    .navigationTitle("月记：\(myTag.getTag(from: currentShowingTagID).title)")
+                    .navigationTitle("叶记：\(myTag.getTag(from: currentShowingTagID).title)")
                 }
                 
                 if shouldLock && !isUnlocked {
@@ -395,7 +396,7 @@ struct ContentView: View {
             newRecord.cateDate = Date.now
             newRecord.modifiedDate = Date()
             newRecord.text = "目前没有内容"
-            newRecord.title = "没有标题\(newRecord.cateDate!.formatted(date: .omitted, time: .shortened))"
+            newRecord.title = "未命名\(newRecord.cateDate!.formatted(date: .omitted, time: .shortened))"
             newRecord.tagIDs = [Tag.journalTag.id]
             
             do {

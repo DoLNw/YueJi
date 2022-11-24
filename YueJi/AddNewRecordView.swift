@@ -11,6 +11,8 @@ struct AddNewRecordView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dismiss) private var dismiss
     
+    let selectedChangeGemerator = UISelectionFeedbackGenerator()
+    
     @State private var cateDate: Date = Date()
     @State private var title: String = Date.now.formatted(date: .omitted, time: .shortened)
     let records: [Record]
@@ -113,7 +115,7 @@ struct AddNewRecordView: View {
             newRecord.modifiedDate = Date.now
             newRecord.createDate = Date.now
             newRecord.text = "目前没有内容"
-            newRecord.title = title
+            newRecord.title = "未命名\(title)"
             newRecord.tagIDs = [tagID]
             newRecord.wordCount = 0
             
@@ -124,6 +126,7 @@ struct AddNewRecordView: View {
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
             
+            selectedChangeGemerator.selectionChanged()
             dismiss()
         }
     }

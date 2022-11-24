@@ -32,14 +32,14 @@ struct EditTagView: View {
                 Form {
                     Section("待添加标签信息") {
                         HStack {
-                            Text("标签标题")
+                            Text("标签标题：")
                             TextField("tagTitle", text: $tagTitle)
                         }
 
                         RoundedRectangle(cornerRadius: 5)
                             .fill(tagColor)
 
-                        ColorPicker("颜色拾取器", selection: $tagColor)
+                        ColorPicker("选择标签颜色：", selection: $tagColor)
                     }
                     Section("按钮") {
                         Button("添加标签") {
@@ -59,7 +59,7 @@ struct EditTagView: View {
                         RoundedRectangle(cornerRadius: 5)
                             .fill(tagColor)
 
-                        ColorPicker("颜色拾取器", selection: $tagColor)
+                        ColorPicker("修改标签颜色：", selection: $tagColor)
                     }
 
                     Section("按钮") {
