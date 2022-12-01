@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-//import HighlightedTextEditor
 
 struct DayTextView: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -21,6 +20,8 @@ struct DayTextView: View {
         return "\(compnents.day ?? 0) 日"
     }
     
+//    @FocusState private var texteditorFocused: Bool
+    
     @State private var title: String = ""
     @State private var text: String = ""
     @State private var wordCount: Int = 0
@@ -33,23 +34,26 @@ struct DayTextView: View {
     
     var body: some View {
         GeometryReader { geo in
-            ZStack(alignment: .leading) {
+            ZStack {
                 if let data = viewModel.backgroundImageData, let image = UIImage(data: data) {
                     Image(uiImage: image)
                         .resizable()
                         .scaledToFill()
+                        .frame(width: geo.size.width)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
                         .ignoresSafeArea(edges: [.bottom])
                 }
                 
                 ZStack(alignment: .bottomTrailing) {
                     VStack {
-                        ScrollView {
-                            TextField("标题", text: $title)
-                                .padding(20)
-                                .frame(width: geo.size.width)
-                                .font(.title2)
-                            
-                            if #available(iOS 16.0, *) {
+                        if #available(iOS 16.0, *) {
+                            ScrollView {
+                                TextField("标题", text: $title)
+                                    .padding(20)
+                                    .frame(width: geo.size.width)
+                                    .font(.title2)
+                                
+                                
                                 TextEditor(text: $text)
                                     .onChange(of: text) { value in
                                         //                        let words = text.split { $0 == " " || $0.isNewline }
@@ -58,12 +62,19 @@ struct DayTextView: View {
                                     }
                                     .autocapitalization(.none)
                                     .disableAutocorrection(true)
-                                    .scrollDismissesKeyboard(.interactively)
-                                    .multilineTextAlignment(.leading)
-                                    .frame(width: geo.size.width - 30, height: geo.size.height - 50)
                                     .scrollContentBackground(.hidden)
-                                //                                .background(.blue)
-                            } else {
+                                    .multilineTextAlignment(.leading)
+//                                    .border(.quaternary, width: 1)
+                                    .frame(width: geo.size.width - 30, height: geo.size.height - 100)
+                            }
+                            .scrollDismissesKeyboard(.interactively)
+                        } else {
+                            ScrollView {
+                                TextField("标题", text: $title)
+                                    .padding(20)
+                                    .frame(width: geo.size.width)
+                                    .font(.title2)
+                                
                                 TextEditor(text: $text)
                                     .onChange(of: text) { value in
                                         let words = text.split { $0 == " " || $0.isNewline }
@@ -74,10 +85,9 @@ struct DayTextView: View {
                                     .lineSpacing(5)
                                     .multilineTextAlignment(.leading)
                                     .frame(width: geo.size.width - 30, height: geo.size.height - 50)
-                                //                                .background(.blue)
+//                                    .focused($texteditorFocused)
                             }
-                        }
-                        
+                       }
                     }
                     
                     VStack(alignment: .trailing, spacing: 2) {

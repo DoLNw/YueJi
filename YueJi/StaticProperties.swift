@@ -16,5 +16,6 @@ class StaticProperties {
     static let USER_DEFAULTS_PREDATE = "preDate"
     static let USERDEFAULTS_NEEDBACKIMAGE = "needBackImage"
     
+    static let USERDEFAULTS_BACKGROUNDIMAGE = "backgroundImage"
     static let FILEMANAGER_BACKGROUNDIMAGE = "backgroundImage"
 }

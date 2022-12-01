@@ -18,26 +18,28 @@ import SwiftUI
     let savePath = FileManager.documentsDirectory.appendingPathExtension(StaticProperties.FILEMANAGER_BACKGROUNDIMAGE)
     
     init() {
-        do {
-            self.backgroundImageData = try Data(contentsOf: savePath)
-        } catch {
-            self.backgroundImageData = nil
-        }
+        self.backgroundImageData = UserDefaults.standard.data(forKey: StaticProperties.USERDEFAULTS_BACKGROUNDIMAGE)
+//        do {
+//            self.backgroundImageData = try Data(contentsOf: savePath)
+//        } catch {
+//            self.backgroundImageData = nil
+//        }
     }
     
     func setBackgroundImage(data: Data?) {
         self.backgroundImageData = data
         
-        do {
-            if let _ = self.backgroundImageData {
-                try self.backgroundImageData?.write(to: savePath, options: [.atomic, .completeFileProtection])
-            } else {
-                try FileManager.default.removeItem(at: savePath)
-            }
-            
-        } catch {
-            print("opeartion failed.")
-        }
+        UserDefaults.standard.set(self.backgroundImageData, forKey: StaticProperties.USERDEFAULTS_BACKGROUNDIMAGE)
+//        do {
+//            if let _ = self.backgroundImageData {
+//                try self.backgroundImageData?.write(to: savePath, options: [.atomic, .completeFileProtection])
+//            } else {
+//                try FileManager.default.removeItem(at: savePath)
+//            }
+//
+//        } catch {
+//            print("opeartion failed.\(error)")
+//        }
     }
 }
 
