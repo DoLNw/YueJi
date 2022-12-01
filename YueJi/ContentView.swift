@@ -45,6 +45,9 @@ struct ContentView: View {
     
     @Environment(\.managedObjectContext) private var viewContext
     
+    @FetchRequest(sortDescriptors: [], animation: .default)
+    private var personInfo: FetchedResults<PersonInfo>
+    
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Record.cateDate, ascending: false)],
         animation: .default)
@@ -96,7 +99,8 @@ struct ContentView: View {
     
 //    @State private var flatMode: Bool = UserDefaults.standard.bool(forKey: StaticProperties.USERDEFAULTS_READERMMODE)
     @AppStorage(StaticProperties.USERFEFAULTS_FLATMODE) private var flatMode: Bool = false
-    @AppStorage(StaticProperties.USERDEFAULTS_ACCDAYS) private var accumulateDays = 0
+    // 为了适配1.0版本，所以这个还需要存在
+    @AppStorage(StaticProperties.USERDEFAULTS_ACCDAYS) private var accumulateDays = 1
     @AppStorage(StaticProperties.USER_DEFAULTS_PREDATE) private var preDate: String = ""
     @State private var shouldLock: Bool = UserDefaults.standard.bool(forKey: StaticProperties.USERFEFAULTS_SHOULDLOCK)
     
@@ -304,7 +308,7 @@ struct ContentView: View {
                                     ChangeTagView(refreshID: $refreshID, myTag: myTag, record: record)
                                 })
                                 .sheet(isPresented: $showSettingView, content: {
-                                    SettingView(shouldLock: $shouldLock, isUnlocked: $isUnlocked, accumulateDays: accumulateDays)
+                                    SettingView(shouldLock: $shouldLock, isUnlocked: $isUnlocked, personInfo: personInfo.first)
                                 })
                                 .onAppear {
                                     refreshID.toggle()
@@ -369,7 +373,21 @@ struct ContentView: View {
                 
                 let dateCompoments = Calendar.current.dateComponents([.year, .month, .day], from: Date.now)
                 if dateCompoments.description != preDate {
-                    accumulateDays += 1
+//                    accumulateDays += 1
+                    if let personInfo = personInfo.first {
+                        personInfo.accumulateDays += 1
+                    } else {
+                        let newRecord = PersonInfo(context: viewContext)
+                        newRecord.accumulateDays = Int64(self.accumulateDays)
+                        
+                        do {
+                            try viewContext.save()
+                        } catch {
+                            let nsError = error as NSError
+                            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                        }
+                    }
+                    
                     preDate = dateCompoments.description
                 }
                 

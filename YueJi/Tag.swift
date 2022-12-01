@@ -148,19 +148,33 @@ public class Tag: NSObject, Identifiable, Codable, NSSecureCoding {
 
 
 // 为了能让CoreData能够自己解析编码[Tag]，首先上面的Tag需要先conform to：NSSexureCoding和NSObject
-class TagAttributeTransformer: NSSecureUnarchiveFromDataTransformer {
-    override static var allowedTopLevelClasses: [AnyClass] {
-        [Tag.self]
-    }
-    
-    static func register() {
-        let className = String(describing: TagAttributeTransformer.self)
-        let name = NSValueTransformerName(className)
-        let transformer = TagAttributeTransformer()
-        
-        ValueTransformer.setValueTransformer(transformer, forName: name)
-    }
-}
+//class TagAttributeTransformer: NSSecureUnarchiveFromDataTransformer {
+//    override static var allowedTopLevelClasses: [AnyClass] {
+//        [Tag.self]
+//    }
+//
+//    static func register() {
+//        let className = String(describing: TagAttributeTransformer.self)
+//        let name = NSValueTransformerName(className)
+//        let transformer = TagAttributeTransformer()
+//
+//        ValueTransformer.setValueTransformer(transformer, forName: name)
+//    }
+//}
+
+//class TagAttributeTransformer: NSSecureUnarchiveFromDataTransformer {
+//    override static var allowedTopLevelClasses: [AnyClass] {
+//        [Tag.self]
+//    }
+//    
+//    static func register() {
+//        let className = String(describing: TagAttributeTransformer.self)
+//        let name = NSValueTransformerName(className)
+//        let transformer = TagAttributeTransformer()
+//        
+//        ValueTransformer.setValueTransformer(transformer, forName: name)
+//    }
+//}
 
 //struct DatePickerExample: View {
 //    @State private var date = Date()

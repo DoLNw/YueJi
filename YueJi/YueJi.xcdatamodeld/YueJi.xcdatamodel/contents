@@ -3,11 +3,14 @@
     <entity name="Item" representedClassName="Item" syncable="YES" codeGenerationType="class">
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
+    <entity name="PersonInfo" representedClassName="PersonInfo" syncable="YES">
+        <attribute name="accumulateDays" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
     <entity name="Record" representedClassName="Record" syncable="YES">
         <attribute name="cateDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="createDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="modifiedDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="tagIDs" optional="YES" attributeType="Transformable" valueTransformerName="TagAttributeTransformer" customClassName="Tag"/>
+        <attribute name="tagIDs" optional="YES" attributeType="Transformable" valueTransformerName=""/>
         <attribute name="text" optional="YES" attributeType="String"/>
         <attribute name="title" optional="YES" attributeType="String"/>
         <attribute name="uuid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
