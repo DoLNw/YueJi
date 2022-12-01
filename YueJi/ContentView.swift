@@ -11,10 +11,12 @@ import SwiftUI
 import CoreData
 import LocalAuthentication
 
+
 var fullWidth: CGFloat = UIScreen.main.bounds.width
 var fullHeight: CGFloat = UIScreen.main.bounds.height
 
 struct ContentView: View {
+    @EnvironmentObject private var viewModel: ContentViewModel
     @State private var isUnlocked = false
     
     func authenticate() {
@@ -124,6 +126,7 @@ struct ContentView: View {
                                                     NavigationLink {
                                                         DayTextView(record: record)
                                                             .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
+                                                            .environmentObject(viewModel)
                                                     } label: {
                                                         HStack {
                                                             Circle()

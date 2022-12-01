@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct MonthCateView: View {
+    @EnvironmentObject private var viewModel: ContentViewModel
+    
     let year: Int
     let month: Int
     var cateRecords: [Record]
@@ -45,6 +47,8 @@ struct MonthCateView: View {
                         NavigationLink {
                             DayTextView(record: record)
                                 .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
+                                .environmentObject(viewModel)
+                            
                         } label: {
                             ZStack(alignment: .topLeading) {
                                 Circle()

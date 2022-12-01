@@ -14,6 +14,7 @@ class StaticProperties {
     static let USERFEFAULTS_SHOULDLOCK = "shouldLock"
     static let USERDEFAULTS_ACCDAYS = "accumulateDays"
     static let USER_DEFAULTS_PREDATE = "preDate"
+    static let USERDEFAULTS_NEEDBACKIMAGE = "needBackImage"
+    
+    static let FILEMANAGER_BACKGROUNDIMAGE = "backgroundImage"
 }
-
-

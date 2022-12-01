@@ -10,6 +10,7 @@ import SwiftUI
 @main
 struct YueJiApp: App {
     let persistenceController = PersistenceController.shared
+    @StateObject private var viewModel = ContentViewModel()
     
 //    init() {
 //        setupPreUserdefaults()
@@ -19,6 +20,7 @@ struct YueJiApp: App {
         WindowGroup {
             ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .environmentObject(viewModel)
         }
     }
 }
