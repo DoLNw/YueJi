@@ -16,12 +16,13 @@ struct MonthCateView: View {
     
 //    let selectedChangeGemerator = UISelectionFeedbackGenerator()
     
-    @ObservedObject var myTag: Tags
+    
     @Binding var currentShowingTagID: UUID
     
     @State private var showConfirationDelete = false
     
     @Environment(\.managedObjectContext) private var viewContext
+    @EnvironmentObject var personInfo: PersonInfo
     
     // 为了改动record后，能刷新该页面
     @State private var refreshID = true
@@ -30,12 +31,11 @@ struct MonthCateView: View {
     
     @State private var readerMode: Bool = false
     
-    init(year: Int, month: Int, cateRecords: [Record], myTag: Tags, currentShowingTagID: Binding<UUID>) {
+    init(year: Int, month: Int, cateRecords: [Record], currentShowingTagID: Binding<UUID>) {
         self.year = year
         self.month = month
         self.cateRecords = cateRecords
         self._currentShowingTagID = currentShowingTagID
-        self.myTag = myTag
     }
     
     var body: some View {
@@ -43,7 +43,7 @@ struct MonthCateView: View {
             if !readerMode {
                 List {
                     ForEach(cateRecords) { record in
-                        let currentTag = myTag.getTag(from: record.wrappedTagIDs.first!)
+                        let currentTag = personInfo.getTag(from: record.wrappedTagIDs.first!)
                         NavigationLink {
                             DayTextView(record: record)
                                 .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
@@ -105,7 +105,7 @@ struct MonthCateView: View {
                         } header: {
                             HStack {
                                 Circle()
-                                    .fill(myTag.getTag(from: record.wrappedTagIDs.first!).color)
+                                    .fill(personInfo.getTag(from: record.wrappedTagIDs.first!).color)
                                     .frame(width: 7, height: 7)
                                 Text(record.wrappedTitle)
                                 
@@ -120,11 +120,13 @@ struct MonthCateView: View {
             }
         }
         .sheet(isPresented: $showAddNewRecord, content: {
-            AddNewRecordView(records: cateRecords, myTag: myTag, tagID: currentShowingTagID, year: year, month: month)
+            AddNewRecordView(records: cateRecords, tagID: currentShowingTagID, year: year, month: month)
                 .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
+                .environmentObject(personInfo)
         })
         .sheet(item: $currentChangedRecord, content: { record in
-            ChangeTagView(refreshID: $refreshID, myTag: myTag, record: record)
+            ChangeTagView(refreshID: $refreshID, record: record)
+                .environmentObject(personInfo)
         })
         
         .onAppear {
@@ -162,7 +164,7 @@ struct MonthCateView: View {
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
             offsets.map { cateRecords[$0] }.forEach(viewContext.delete)
-
+            
             do {
                 try viewContext.save()
             } catch {

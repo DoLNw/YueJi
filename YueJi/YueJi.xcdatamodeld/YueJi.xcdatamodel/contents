@@ -5,6 +5,8 @@
     </entity>
     <entity name="PersonInfo" representedClassName="PersonInfo" syncable="YES">
         <attribute name="accumulateDays" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="createDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="tags" optional="YES" attributeType="Transformable" valueTransformerName="TagAttributeTransformer" customClassName="[Tag]"/>
     </entity>
     <entity name="Record" representedClassName="Record" syncable="YES">
         <attribute name="cateDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>

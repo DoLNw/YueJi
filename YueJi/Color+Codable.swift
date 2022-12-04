@@ -58,7 +58,7 @@ extension Color: Codable {
         
         self.init(red: r, green: g, blue: b)
     }
-
+    
     public func encode(to encoder: Encoder) throws {
         guard let colorComponents = self.colorComponents else {
             return
@@ -117,31 +117,118 @@ enum DecodingError: Error {
 
 // 为了SwiftUI Color能够转成UIColor
 extension Color {
- 
-    func uiColor() -> UIColor {
+//    func uiColor() -> UIColor {
+//        if #available(iOS 14.0, *) {
+//            return UIColor(self)
+//        }
+//
+//        let components = self.components()
+//        return UIColor(red: components.r, green: components.g, blue: components.b, alpha: components.a)
+//    }
 
-        if #available(iOS 14.0, *) {
-            return UIColor(self)
+//    private func components() -> (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat) {
+//        let scanner = Scanner(string: self.description.trimmingCharacters(in: CharacterSet.alphanumerics.inverted))
+//        var hexNumber: UInt64 = 0
+//        var r: CGFloat = 0.0, g: CGFloat = 0.0, b: CGFloat = 0.0, a: CGFloat = 0.0
+//
+//        let result = scanner.scanHexInt64(&hexNumber)
+//        if result {
+//            r = CGFloat((hexNumber & 0xff000000) >> 24) / 255
+//            g = CGFloat((hexNumber & 0x00ff0000) >> 16) / 255
+//            b = CGFloat((hexNumber & 0x0000ff00) >> 8) / 255
+//            a = CGFloat(hexNumber & 0x000000ff) / 255
+//        }
+//        return (r, g, b, a)
+//    }
+    
+//    public func toHexString() -> String {
+//        let scanner = Scanner(string: self.description.trimmingCharacters(in: CharacterSet.alphanumerics.inverted))
+//        var hexNumber: UInt64 = 0
+//        let result = scanner.scanHexInt64(&hexNumber)
+//
+//        return "#\(hexNumber)"
+//    }
+//
+//    public init(hex: String) {
+//            let r, g, b, a: CGFloat
+//
+//            if hex.hasPrefix("#") {
+//                let start = hex.index(hex.startIndex, offsetBy: 1)
+//                let hexColor = String(hex[start...])
+//
+//                if hexColor.count == 8 {
+//                    let scanner = Scanner(string: hexColor)
+//                    var hexNumber: UInt64 = 0
+//
+//                    if scanner.scanHexInt64(&hexNumber) {
+//                        r = CGFloat((hexNumber & 0xff000000) >> 24) / 255
+//                        g = CGFloat((hexNumber & 0x00ff0000) >> 16) / 255
+//                        b = CGFloat((hexNumber & 0x0000ff00) >> 8) / 255
+//                        a = CGFloat(hexNumber & 0x000000ff) / 255
+//
+//                        self.init(uiColor: UIColor(red: r, green: g, blue: b, alpha: a))
+//                        return
+//                    }
+//                }
+//            }
+//
+//        self.init(uiColor: UIColor.red)
+//    }
+    
+    init(hex: String) {
+        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
+
+        var rgb: UInt64 = 0
+
+        var r: CGFloat = 0.0
+        var g: CGFloat = 0.0
+        var b: CGFloat = 0.0
+        var a: CGFloat = 1.0
+
+        let length = hexSanitized.count
+
+        guard Scanner(string: hexSanitized).scanHexInt64(&rgb) else {
+            self.init(uiColor: .red)
+            return
         }
 
-        let components = self.components()
-        return UIColor(red: components.r, green: components.g, blue: components.b, alpha: components.a)
+        if length == 6 {
+            r = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
+            g = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
+            b = CGFloat(rgb & 0x0000FF) / 255.0
+
+        } else if length == 8 {
+            r = CGFloat((rgb & 0xFF000000) >> 24) / 255.0
+            g = CGFloat((rgb & 0x00FF0000) >> 16) / 255.0
+            b = CGFloat((rgb & 0x0000FF00) >> 8) / 255.0
+            a = CGFloat(rgb & 0x000000FF) / 255.0
+        } else {
+            self.init(uiColor: .red)
+        }
+
+        self.init(red: r, green: g, blue: b, opacity: a)
     }
-
-    private func components() -> (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat) {
-
-        let scanner = Scanner(string: self.description.trimmingCharacters(in: CharacterSet.alphanumerics.inverted))
-        var hexNumber: UInt64 = 0
-        var r: CGFloat = 0.0, g: CGFloat = 0.0, b: CGFloat = 0.0, a: CGFloat = 0.0
-
-        let result = scanner.scanHexInt64(&hexNumber)
-        if result {
-            r = CGFloat((hexNumber & 0xff000000) >> 24) / 255
-            g = CGFloat((hexNumber & 0x00ff0000) >> 16) / 255
-            b = CGFloat((hexNumber & 0x0000ff00) >> 8) / 255
-            a = CGFloat(hexNumber & 0x000000ff) / 255
+    
+    func toHexString() -> String {
+        let uic = UIColor(self)
+        guard let components = uic.cgColor.components, components.count >= 3 else {
+            return ""
         }
-        return (r, g, b, a)
+        let r = Float(components[0])
+        let g = Float(components[1])
+        let b = Float(components[2])
+        var a = Float(1.0)
+
+        if components.count >= 4 {
+            a = Float(components[3])
+        }
+
+        if a != Float(1.0) {
+            return String(format: "%02lX%02lX%02lX%02lX", lroundf(r * 255), lroundf(g * 255), lroundf(b * 255), lroundf(a * 255))
+        } else {
+            return String(format: "%02lX%02lX%02lX", lroundf(r * 255), lroundf(g * 255), lroundf(b * 255))
+        }
     }
 }
 

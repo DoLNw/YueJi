@@ -12,7 +12,7 @@ import PhotosUI
 struct TextEditorSettingView: View {
     @State private var selectedPhotoItem: PhotosPickerItem? = nil
     @EnvironmentObject private var viewModel: ContentViewModel
-        
+    
     @AppStorage(StaticProperties.USERDEFAULTS_NEEDBACKIMAGE) private var needBackImage = false
     
     var body: some View {

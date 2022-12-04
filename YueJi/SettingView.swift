@@ -15,12 +15,11 @@ struct SettingView: View {
     
     @State private var showPrivacyAlert: Bool = false
     
-    let personInfo: PersonInfo?
+    @EnvironmentObject var personInfo: PersonInfo
     
-    init(shouldLock: Binding<Bool>, isUnlocked: Binding<Bool>, personInfo: PersonInfo?) {
+    init(shouldLock: Binding<Bool>, isUnlocked: Binding<Bool>) {
         self._shouldLock = shouldLock
         self._isUnlocked = isUnlocked
-        self.personInfo = personInfo
     }
     
     var body: some View {
@@ -37,110 +36,107 @@ struct SettingView: View {
                         }
                 }
                 
-                if let personInfo = personInfo {
-//                    let accumulateDays = personInfo.accumulateDays
-                    
-                    let year = personInfo.accumulateDays / 7 / 4 / 12
-                    let month = personInfo.accumulateDays / 7 / 4 % 12
-                    let week = personInfo.accumulateDays / 7 % 4
-                    let day = personInfo.accumulateDays % 7
-                    let nextYear = (personInfo.accumulateDays + 1) / 7 / 4 / 12
-                    let nextMonth = (personInfo.accumulateDays + 1) / 7 / 4 % 12
-                    let nextWeek = (personInfo.accumulateDays + 1) / 7 % 4
-                    let nextDay = (personInfo.accumulateDays + 1) % 7
-                    Section("累计签到：\(year)年\(month)月\(week)周\(day)天") {
-                        HStack {
-                            ForEach(0..<year, id: \.self) { index in
+                let accumulateDays = personInfo.accumulateDays
+                let year = accumulateDays / 7 / 4 / 12
+                let month = accumulateDays / 7 / 4 % 12
+                let week = accumulateDays / 7 % 4
+                let day = accumulateDays % 7
+                let nextYear = (accumulateDays + 1) / 7 / 4 / 12
+                let nextMonth = (accumulateDays + 1) / 7 / 4 % 12
+                let nextWeek = (accumulateDays + 1) / 7 % 4
+                let nextDay = (accumulateDays + 1) % 7
+                Section("累计签到：\(year)年\(month)月\(week)周\(day)天") {
+                    HStack {
+                        ForEach(0..<year, id: \.self) { index in
+                            Image(systemName: "sun.max.fill")
+                                .foregroundColor(.yellow)
+                                .font(.title)
+                        }
+                        
+                        if nextYear > year {
+                            Image(systemName: "sun.max")
+                                .foregroundColor(.yellow)
+                                .font(.title)
+                        }
+                    }
+                    HStack {
+                        ForEach(0..<month, id: \.self) { index in
+                            Image(systemName: "moon.stars.fill")
+                                .foregroundColor(.yellow)
+                                .font(.title)
+                        }
+                        
+                        if nextMonth > month {
+                            Image(systemName: "moon.stars")
+                                .foregroundColor(.yellow)
+                                .font(.title)
+                        }
+                    }
+                    HStack {
+                        ForEach(0..<week, id: \.self) { index in
+                            Image(systemName: "moon.fill")
+                                .foregroundColor(.yellow)
+                                .font(.title)
+                        }
+                        
+                        if nextWeek > week {
+                            Image(systemName: "moon")
+                                .foregroundColor(.yellow)
+                                .font(.title)
+                        }
+                    }
+                    HStack {
+                        ForEach(0..<day, id: \.self) { index in
+                            Image(systemName: "star.fill")
+                                .foregroundColor(.yellow)
+                                .font(.title)
+                        }
+                        
+                        if nextDay > day {
+                            Image(systemName: "star")
+                                .foregroundColor(.yellow)
+                                .font(.title)
+                        }
+                    }
+                }
+                .onTapGesture {
+                    withAnimation {
+                        self.showStateAlert.toggle()
+                    }
+                }
+                
+                if self.showStateAlert {
+                    Section("累计说明表") {
+                        VStack(alignment: .leading) {
+                            HStack {
+                                Text("年：")
                                 Image(systemName: "sun.max.fill")
                                     .foregroundColor(.yellow)
-                                    .font(.title)
-                            }
-                            
-                            if nextYear > year {
-                                Image(systemName: "sun.max")
-                                    .foregroundColor(.yellow)
-                                    .font(.title)
-                            }
-                        }
-                        HStack {
-                            ForEach(0..<month, id: \.self) { index in
+                                Text("= 12")
                                 Image(systemName: "moon.stars.fill")
                                     .foregroundColor(.yellow)
-                                    .font(.title)
                             }
-                            
-                            if nextMonth > month {
-                                Image(systemName: "moon.stars")
+                            HStack {
+                                Text("月：")
+                                Image(systemName: "moon.stars.fill")
                                     .foregroundColor(.yellow)
-                                    .font(.title)
-                            }
-                        }
-                        HStack {
-                            ForEach(0..<week, id: \.self) { index in
+                                Text("= 4")
                                 Image(systemName: "moon.fill")
                                     .foregroundColor(.yellow)
-                                    .font(.title)
                             }
-                            
-                            if nextWeek > week {
-                                Image(systemName: "moon")
+                            HStack {
+                                Text("周：")
+                                Image(systemName: "moon.fill")
                                     .foregroundColor(.yellow)
-                                    .font(.title)
-                            }
-                        }
-                        HStack {
-                            ForEach(0..<day, id: \.self) { index in
+                                Text("= 7")
                                 Image(systemName: "star.fill")
                                     .foregroundColor(.yellow)
-                                    .font(.title)
                             }
-                            
-                            if nextDay > day {
-                                Image(systemName: "star")
+                            HStack {
+                                Text("天：")
+                                Image(systemName: "star.fill")
                                     .foregroundColor(.yellow)
-                                    .font(.title)
-                            }
-                        }
-                    }
-                    .onTapGesture {
-                        withAnimation {
-                            self.showStateAlert.toggle()
-                        }
-                    }
-                    
-                    if self.showStateAlert {
-                        Section("累计说明表") {
-                            VStack(alignment: .leading) {
-                                HStack {
-                                    Text("年：")
-                                    Image(systemName: "sun.max.fill")
-                                        .foregroundColor(.yellow)
-                                    Text("= 12")
-                                    Image(systemName: "moon.stars.fill")
-                                        .foregroundColor(.yellow)
-                                }
-                                HStack {
-                                    Text("月：")
-                                    Image(systemName: "moon.stars.fill")
-                                        .foregroundColor(.yellow)
-                                    Text("= 4")
-                                    Image(systemName: "moon.fill")
-                                        .foregroundColor(.yellow)
-                                }
-                                HStack {
-                                    Text("周：")
-                                    Image(systemName: "moon.fill")
-                                        .foregroundColor(.yellow)
-                                    Text("= 7")
-                                    Image(systemName: "star.fill")
-                                        .foregroundColor(.yellow)
-                                }
-                                HStack {
-                                    Text("天：")
-                                    Image(systemName: "star.fill")
-                                        .foregroundColor(.yellow)
-                                    Text("= 1天")
-                                }
+                                Text("= 1天")
                             }
                         }
                     }

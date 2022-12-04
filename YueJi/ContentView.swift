@@ -41,12 +41,10 @@ struct ContentView: View {
         }
     }
     
-    @StateObject private var myTag = Tags()
-    
     @Environment(\.managedObjectContext) private var viewContext
     
-    @FetchRequest(sortDescriptors: [], animation: .default)
-    private var personInfo: FetchedResults<PersonInfo>
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \PersonInfo.createDate, ascending: false)], animation: .default)
+    private var personInfos: FetchedResults<PersonInfo>
     
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Record.cateDate, ascending: false)],
@@ -98,7 +96,7 @@ struct ContentView: View {
     @State private var currentChangedRecord: Record?
     
 //    @State private var flatMode: Bool = UserDefaults.standard.bool(forKey: StaticProperties.USERDEFAULTS_READERMMODE)
-    @AppStorage(StaticProperties.USERFEFAULTS_FLATMODE) private var flatMode: Bool = false
+    @AppStorage(StaticProperties.USERFEFAULTS_FLATMODE) private var flatMode: Bool = true
     // 为了适配1.0版本，所以这个还需要存在
     @AppStorage(StaticProperties.USERDEFAULTS_ACCDAYS) private var accumulateDays = 1
     @AppStorage(StaticProperties.USER_DEFAULTS_PREDATE) private var preDate: String = ""
@@ -125,8 +123,8 @@ struct ContentView: View {
                                                 .font(.title)
                                                 .foregroundColor(.secondary)) {
                                                 ForEach(dictMonthRecords.value) { record in
-                                                    let currentTag = myTag.getTag(from: record.wrappedTagIDs.first!)
-                                                    
+                                                    let currentTag = personInfos.first?.getTag(from: record.wrappedTagIDs.first!) ?? Tag.noneTag
+
                                                     NavigationLink {
                                                         DayTextView(record: record)
                                                             .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
@@ -136,13 +134,13 @@ struct ContentView: View {
                                                             Circle()
                                                                 .fill(currentTag.color)
                                                                 .frame(width: 7, height: 7)
-                                                            
+
                                                             HStack {
                                                                 HStack(spacing: 3) {
                                                                     let datecom = Calendar.current.dateComponents([.day], from: record.wrappedCateDate)
                                                                     Text(String(format: "%02d", (datecom.day ?? 0)))
                                                                         .font(.title2)
-                                                                    
+
                                                                     Text("日")
                                                                         .font(.caption)
                                                                         .offset(y: 10)
@@ -150,7 +148,7 @@ struct ContentView: View {
                                                                 .padding([.leading], 5)
                                                                 .padding([.top, .bottom], 10)
                                                                 .padding([.trailing], 20)
-                                                                
+
                                                                 VStack(alignment: .leading, spacing: 5) {
                                                                     Text(record.wrappedTitle + (refreshID ? "" : ""))
     //                                                                    .foregroundColor(Color(UIColor.darkGray))
@@ -188,8 +186,9 @@ struct ContentView: View {
                                         .font(.title)) {
                                         ForEach(dictYearRecords.value.sorted(by: {$0.key > $1.key}), id: \.key) { dictMonthRecords in
                                             NavigationLink {
-                                                MonthCateView(year: dictYearRecords.key, month: dictMonthRecords.key, cateRecords: dictMonthRecords.value, myTag: myTag, currentShowingTagID: $currentShowingTagID)
+                                                MonthCateView(year: dictYearRecords.key, month: dictMonthRecords.key, cateRecords: dictMonthRecords.value, currentShowingTagID: $currentShowingTagID)
                                                     .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
+                                                    .environmentObject(personInfos.first!)
                                             } label: {
                                                 HStack {
                                                     HStack {
@@ -228,7 +227,7 @@ struct ContentView: View {
                                 GeometryReader { scrollewViewGeo in
                                     ScrollView(.horizontal, showsIndicators: false) {
                                         HStack(spacing: 30) {
-                                            ForEach(myTag.tags) { tag in
+                                            ForEach(personInfos.first?.wrappedTags ?? [Tag]()) { tag in
                                                 ZStack {
                                                     // 不加这个，下面的Geo不知道大小是多小，所以只能这么办了
                                                     Text("\(tag.title)")
@@ -236,7 +235,7 @@ struct ContentView: View {
                                                         .padding(EdgeInsets(top: 10, leading: 20, bottom: 10, trailing: 20))
                                                         .opacity(0)
                                                         .frame(minWidth: fullView.size.width / 4)
-                                                    
+
                                                     GeometryReader { geo in
                                                         if (scrollewViewGeo.frame(in: .global).minX > 0 && geo.frame(in: .global).midX >= fullView.size.width / 3 && geo.frame(in: .global).midX <= fullView.size.width / 3 * 2) {
                                                             Text("\(tag.title)")
@@ -297,18 +296,22 @@ struct ContentView: View {
                                 }
                                 .padding([.leading, .trailing], 10)
                                 .sheet(item: $currentTappedTagID, content: { tagId in
-                                    EditTagView(myTag: myTag, currentTappedTagID: tagId, records: records)
+                                    EditTagView(currentTappedTagID: tagId, records: records)
                                         .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
+                                        .environmentObject(personInfos.first!)
                                 })
                                 .sheet(isPresented: $showAddNewRecord, content: {
-                                    AddNewRecordView(records: filteredRecords, myTag: myTag, tagID: currentShowingTagID, year: 0, month: 0)
+                                    AddNewRecordView(records: filteredRecords, tagID: currentShowingTagID, year: 0, month: 0)
                                         .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
+                                        .environmentObject(personInfos.first!)
                                 })
                                 .sheet(item: $currentChangedRecord, content: { record in
-                                    ChangeTagView(refreshID: $refreshID, myTag: myTag, record: record)
+                                    ChangeTagView(refreshID: $refreshID, record: record)
+                                        .environmentObject(personInfos.first!)
                                 })
                                 .sheet(isPresented: $showSettingView, content: {
-                                    SettingView(shouldLock: $shouldLock, isUnlocked: $isUnlocked, personInfo: personInfo.first)
+                                    SettingView(shouldLock: $shouldLock, isUnlocked: $isUnlocked)
+                                        .environmentObject(personInfos.first!)
                                 })
                                 .onAppear {
                                     refreshID.toggle()
@@ -352,7 +355,8 @@ struct ContentView: View {
                             }
                         }
                     }
-                    .navigationTitle("叶记：\(myTag.getTag(from: currentShowingTagID).title)")
+                    
+                    .navigationTitle("叶记：\(personInfos.first?.getTag(from: currentShowingTagID).title ?? "Null")")
                 }
                 
                 if shouldLock && !isUnlocked {
@@ -371,22 +375,47 @@ struct ContentView: View {
                     authenticate()
                 }
                 
+                print("asas")
+                print(personInfos.count)
+                if let tags = personInfos.last {
+                    print("tags: \(tags)")
+                } else {
+                    let newRecord = PersonInfo(context: viewContext)
+                    newRecord.accumulateDays = Int64(self.accumulateDays)
+                    newRecord.createDate = Date.now
+                    var tags = [Tag]()
+                    tags.append(Tag.noneTag)
+                    tags.append(Tag.allTag)
+                    tags.append(Tag.journalTag)
+                    tags.append(Tag(title: "标签1", color: Tag.tagColors.randomElement() ?? Color.black))
+                    tags.append(Tag(title: "标签2", color: Tag.tagColors.randomElement() ?? Color.black))
+                    tags.append(Tag(title: "标签3", color: Tag.tagColors.randomElement() ?? Color.black))
+                    tags.append(Tag(title: "标签4", color: Tag.tagColors.randomElement() ?? Color.black))
+                    tags.append(Tag(title: "标签5", color: Tag.tagColors.randomElement() ?? Color.black))
+                    tags.append(Tag.addTag)
+//                    let myTag = MyTag(tags: tags)
+//                    newRecord.myTag? = myTag
+//
+//                    print("bb: \(newRecord.accumulateDays)")
+//                    print("aaaa: \(myTag.tags.count)")
+//                    print("aaaa: \(newRecord.myTag?.tags.count ?? 111)")
+                    newRecord.tags = tags
+                    print("asd: \(newRecord.tags?.count ?? 22)")
+                    do {
+                        try viewContext.save()
+                    } catch {
+                        let nsError = error as NSError
+                        fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                    }
+                    
+                    print("asdads: \(personInfos.count)")
+                }
+                
                 let dateCompoments = Calendar.current.dateComponents([.year, .month, .day], from: Date.now)
                 if dateCompoments.description != preDate {
 //                    accumulateDays += 1
-                    if let personInfo = personInfo.first {
-                        personInfo.accumulateDays += 1
-                    } else {
-                        let newRecord = PersonInfo(context: viewContext)
-                        newRecord.accumulateDays = Int64(self.accumulateDays)
-                        
-                        do {
-                            try viewContext.save()
-                        } catch {
-                            let nsError = error as NSError
-                            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-                        }
-                    }
+                    personInfos.first!.accumulateDays += 1
+//                        personInfo.accumulateDays += 1
                     
                     preDate = dateCompoments.description
                 }

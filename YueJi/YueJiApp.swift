@@ -6,15 +6,29 @@
 //
 
 import SwiftUI
+import UIKit
+
+// no changes in your AppDelegate class
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        
+//        TagAttributeTransformer.register()
+        
+        return true
+    }
+}
 
 @main
 struct YueJiApp: App {
     let persistenceController = PersistenceController.shared
     @StateObject private var viewModel = ContentViewModel()
     
-//    init() {
+    // inject into SwiftUI life-cycle via adaptor !!!
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
+    init() {
 //        setupPreUserdefaults()
-//    }
+    }
 
     var body: some Scene {
         WindowGroup {

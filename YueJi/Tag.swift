@@ -8,98 +8,132 @@
 import Foundation
 import SwiftUI
 
-// 给UserDefaults存储的
-public class Tags: ObservableObject {
-    @Published public var tags: [Tag]
-    
-    init() {
-        tags = []
-        
-        if let data = UserDefaults.standard.data(forKey: StaticProperties.USERDEFAULTS_TAGS) {
-            if let decoded = try? JSONDecoder().decode([Tag].self, from: data) {
-                tags = decoded
-                
-                // 如果存在，为了让其他static Tag的id一样，只能赋值
-                Tag.noneTag = tags[0]
-                Tag.allTag = tags[1]
-                Tag.journalTag = tags[2]
-                Tag.addTag = tags.last!
-            }
-        } else {
-            tags.append(Tag.noneTag)
-            tags.append(Tag.allTag)
-            tags.append(Tag.journalTag)
-            tags.append(Tag(title: "标签1", color: Tag.tagColors.randomElement() ?? Color.black))
-            tags.append(Tag(title: "标签2", color: Tag.tagColors.randomElement() ?? Color.black))
-            tags.append(Tag(title: "标签3", color: Tag.tagColors.randomElement() ?? Color.black))
-            tags.append(Tag(title: "标签4", color: Tag.tagColors.randomElement() ?? Color.black))
-            tags.append(Tag(title: "标签5", color: Tag.tagColors.randomElement() ?? Color.black))
-            tags.append(Tag.addTag)
-            
-            save()
-        }
-    }
-    
-    func getTag(from id: UUID) -> Tag {
-        if let tag = tags.first(where: { $0.id == id }) {
-            return tag
-        }
-            
-        return Tag.noneTag
-    }
-    
-    func editTag(tagID: UUID, title: String, color: Color) {
-        if let index = tags.firstIndex(where: { $0.id == tagID }) {
-            objectWillChange.send()
-            tags[index].title = title
-            tags[index].color = color
-            
-            save()
-        }
-        
-        
-    }
-    
-    func save() {
-        if let data = try? JSONEncoder().encode(tags) {
-            if let decoded = try? JSONDecoder().decode([Tag].self, from: data) {
-                print(decoded.description)
-            }
-            UserDefaults.standard.set(data, forKey: StaticProperties.USERDEFAULTS_TAGS)
-        }
-    }
-    
-    func add(_ tag: Tag) {
-        tags.insert(tag, at: tags.count - 1)
-//        tags.append(tag)
-        save()
-    }
-    func delete(_ tagID: UUID) -> Bool {
-        if let index = tags.firstIndex(where: {$0.id == tagID}) {
-            tags.remove(at: index)
-            save()
-            
-            return true
-        }
-        
-        return false
-    }
-}
+//// 给UserDefaults存储的
+//public class Tags: ObservableObject {
+//    @Published public var tags: [Tag]
+//
+//    init() {
+//        tags = []
+//
+//        if let data = UserDefaults.standard.data(forKey: StaticProperties.USERDEFAULTS_TAGS) {
+//            if let decoded = try? JSONDecoder().decode([Tag].self, from: data) {
+//                tags = decoded
+//
+//                // 如果存在，为了让其他static Tag的id一样，只能赋值
+//                Tag.noneTag = tags[0]
+//                Tag.allTag = tags[1]
+//                Tag.journalTag = tags[2]
+//                Tag.addTag = tags.last!
+//            }
+//        } else {
+//            tags.append(Tag.noneTag)
+//            tags.append(Tag.allTag)
+//            tags.append(Tag.journalTag)
+//            tags.append(Tag(title: "标签1", color: Tag.tagColors.randomElement() ?? Color.black))
+//            tags.append(Tag(title: "标签2", color: Tag.tagColors.randomElement() ?? Color.black))
+//            tags.append(Tag(title: "标签3", color: Tag.tagColors.randomElement() ?? Color.black))
+//            tags.append(Tag(title: "标签4", color: Tag.tagColors.randomElement() ?? Color.black))
+//            tags.append(Tag(title: "标签5", color: Tag.tagColors.randomElement() ?? Color.black))
+//            tags.append(Tag.addTag)
+//
+//            save()
+//        }
+//    }
+//
+//    func getTag(from id: UUID) -> Tag {
+//        if let tag = tags.first(where: { $0.id == id }) {
+//            return tag
+//        }
+//
+//        return Tag.noneTag
+//    }
+//
+//    func editTag(tagID: UUID, title: String, color: Color) {
+//        if let index = tags.firstIndex(where: { $0.id == tagID }) {
+//            objectWillChange.send()
+//            tags[index].title = title
+//            tags[index].color = color
+//
+//            save()
+//        }
+//
+//
+//    }
+//
+//    func save() {
+//        if let data = try? JSONEncoder().encode(tags) {
+//            if let decoded = try? JSONDecoder().decode([Tag].self, from: data) {
+//                print(decoded.description)
+//            }
+//            UserDefaults.standard.set(data, forKey: StaticProperties.USERDEFAULTS_TAGS)
+//        }
+//    }
+//
+//    func add(_ tag: Tag) {
+//        tags.insert(tag, at: tags.count - 1)
+////        tags.append(tag)
+//        save()
+//    }
+//    func delete(_ tagID: UUID) -> Bool {
+//        if let index = tags.firstIndex(where: {$0.id == tagID}) {
+//            tags.remove(at: index)
+//            save()
+//
+//            return true
+//        }
+//
+//        return false
+//    }
+//}
+
+
+// 给coredata使用的MyTag
+//public class MyTag: NSObject, NSSecureCoding {
+//    public static var supportsSecureCoding: Bool = true
+//
+//    var tags: [Tag] = []
+//
+//    enum Key: String {
+//        case tags = "tags"
+//    }
+//
+//    init(tags: [Tag]) {
+//        self.tags = tags
+//    }
+//
+//    public func encode(with coder: NSCoder) {
+//        coder.encode(tags, forKey: Key.tags.rawValue)
+//    }
+//
+//    public required convenience init?(coder: NSCoder) {
+//        let mTags = coder.decodeObject(of: [NSArray.self, Tag.self], forKey: Key.tags.rawValue) as! [Tag]
+//
+//        self.init(tags: mTags)
+//    }
+//}
 
 // CoreData和UserDefault都用的
 public class Tag: NSObject, Identifiable, Codable, NSSecureCoding {
     public func encode(with coder: NSCoder) {
         coder.encode(title, forKey: "mtitle")
         coder.encode(id.description, forKey: "UUID")
-        coder.encode(color.uiColor(), forKey: "color")
+        coder.encode(color.toHexString(), forKey: "color")
     }
     
     public required convenience init?(coder: NSCoder) {
-        let mid = coder.decodeObject(of: NSString.self, forKey: "UUID") as? String
-        let mTitle = coder.decodeObject(of: NSString.self, forKey: "mtitle") as String?
-        let mColor = coder.decodeObject(of: UIColor.self, forKey: "color")
+        guard let mid = coder.decodeObject(of: NSString.self, forKey: "UUID") as? String,
+              let mTitle = coder.decodeObject(of: NSString.self, forKey: "mtitle") as? String,
+              let mColorStr = coder.decodeObject(of: NSString.self, forKey: "color") as? String else {
+            return nil
+        }
+//        guard let mid = coder.decodeObject(of: NSString.self, forKey: "UUID") as? String,
+//              let mTitle = coder.decodeObject(of: NSString.self, forKey: "mtitle") as? String else {
+//            return nil
+//        }
         
-        self.init(id: UUID(uuidString: mid!)!, title: mTitle!, color: Color(uiColor: mColor!))
+        print(mid)
+        print(mTitle)
+        self.init(id: UUID(uuidString: mid)!, title: mTitle, color: Color(hex: mColorStr))
     }
     
     public static var supportsSecureCoding: Bool = true
@@ -109,6 +143,8 @@ public class Tag: NSObject, Identifiable, Codable, NSSecureCoding {
     static var allTag = Tag(title: "全部", color: .mint)
     static var addTag = Tag(title: "添加", color: .accentColor)
     static var journalTag = Tag(title: "日记", color: .orange)
+//    static var addTag = Tag(title: "添加", color: .indigo)
+//    static var journalTag = Tag(title: "日记", color: .indigo)
     
     public var id = UUID()
     public var title: String
@@ -148,31 +184,45 @@ public class Tag: NSObject, Identifiable, Codable, NSSecureCoding {
 
 
 // 为了能让CoreData能够自己解析编码[Tag]，首先上面的Tag需要先conform to：NSSexureCoding和NSObject
-//class TagAttributeTransformer: NSSecureUnarchiveFromDataTransformer {
-//    override static var allowedTopLevelClasses: [AnyClass] {
-//        [Tag.self]
-//    }
-//
-//    static func register() {
-//        let className = String(describing: TagAttributeTransformer.self)
-//        let name = NSValueTransformerName(className)
-//        let transformer = TagAttributeTransformer()
-//
-//        ValueTransformer.setValueTransformer(transformer, forName: name)
-//    }
-//}
+class TagAttributeTransformer: NSSecureUnarchiveFromDataTransformer {
+    override static var allowedTopLevelClasses: [AnyClass] {
+        [NSArray.self, Tag.self]
+    }
+    
+    static func register() {
+        let className = String(describing: TagAttributeTransformer.self)
+        let name = NSValueTransformerName(className)
+        let transformer = TagAttributeTransformer()
 
-//class TagAttributeTransformer: NSSecureUnarchiveFromDataTransformer {
-//    override static var allowedTopLevelClasses: [AnyClass] {
-//        [Tag.self]
+        ValueTransformer.setValueTransformer(transformer, forName: name)
+    }
+
+    override class func allowsReverseTransformation() -> Bool {
+        return true
+    }
+}
+
+//class TagValueTransformer: ValueTransformer {
+//    override func transformedValue(_ value: Any?) -> Any? {
+//        guard let tags = value as? [Tag] else { return nil }
+//
+//        do {
+//            let data = try NSKeyedArchiver.archivedData(withRootObject: tags, requiringSecureCoding: true)
+//            return data
+//        } catch {
+//            return nil
+//        }
 //    }
-//    
-//    static func register() {
-//        let className = String(describing: TagAttributeTransformer.self)
-//        let name = NSValueTransformerName(className)
-//        let transformer = TagAttributeTransformer()
-//        
-//        ValueTransformer.setValueTransformer(transformer, forName: name)
+//
+//    override func reverseTransformedValue(_ value: Any?) -> Any? {
+//        guard let data = value as? Data else { return nil }
+//
+//        do {
+//            let tags = try NSKeyedUnarchiver.unarchivedObject(ofClass: [Tag.self], from: data)
+//            return tags
+//        } catch {
+//            return nil
+//        }
 //    }
 //}
 

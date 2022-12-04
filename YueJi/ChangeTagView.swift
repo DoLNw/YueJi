@@ -16,12 +16,12 @@ struct ChangeTagView: View {
     // 为了能让record改变后，更新
     @Binding var refreshID: Bool
     
-    @ObservedObject var myTag: Tags
+    @EnvironmentObject var personInfo: PersonInfo
     private var filteredTags: [Tag] {
         var tags = [Tag]()
         
 //        let recordTagID = record.tagIDs?.first
-        for tag in myTag.tags {
+        for tag in personInfo.wrappedTags {
 //            if !(tag.id == recordTagID || tag.id == Tag.noneTag.id || tag.id == Tag.allTag.id || Tag.addTag.id == tag.id) {
 //                tags.append(tag)
 //            }
@@ -39,9 +39,8 @@ struct ChangeTagView: View {
     @State private var sysImageName = "arrowshape.turn.up.forward"
     var record: Record
     
-    init(refreshID: Binding<Bool>, myTag: Tags, record: Record) {
+    init(refreshID: Binding<Bool>, record: Record) {
         self._refreshID = refreshID
-        self.myTag = myTag
         self.record = record
     }
     
@@ -88,7 +87,7 @@ struct ChangeTagView: View {
             .listStyle(.grouped)
             
             HStack(alignment: .center) {
-                let currentTag = myTag.getTag(from: currentTagID)
+                let currentTag = personInfo.getTag(from: currentTagID)
                 
                 Text("\(preTagTitle)")
                     .padding()
@@ -155,7 +154,7 @@ struct ChangeTagView: View {
             
             self.currentTagID = record.wrappedTagIDs.first ?? Tag.noneTag.id
             
-            let tag = myTag.getTag(from: record.wrappedTagIDs.first!)
+            let tag = personInfo.getTag(from: record.wrappedTagIDs.first!)
             self.preTagColor = tag.color
             self.preTagTitle = tag.title
         }

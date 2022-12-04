@@ -21,7 +21,7 @@ struct EditTagView: View {
         return currentTappedTagID == Tag.noneTag.id || currentTappedTagID == Tag.allTag.id || currentTappedTagID == Tag.journalTag.id || currentTappedTagID == Tag.addTag.id
     }
 
-    @ObservedObject var myTag: Tags
+    @EnvironmentObject var personInfo: PersonInfo
     var currentTappedTagID: UUID
 
     var records: FetchedResults<Record>?
@@ -44,7 +44,14 @@ struct EditTagView: View {
                     Section("按钮") {
                         Button("添加标签") {
                             let newTag = Tag(title: tagTitle, color: tagColor)
-                            myTag.add(newTag)
+                            personInfo.add(newTag)
+                            
+                            do {
+                                try viewContext.save()
+                            } catch {
+                                let nsError = error as NSError
+                                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                            }
 
                             dismiss()
                         }
@@ -64,8 +71,22 @@ struct EditTagView: View {
 
                     Section("按钮") {
                         Button("保存") {
-                            myTag.editTag(tagID: currentTappedTagID, title: tagTitle, color: tagColor)
+                            personInfo.editTag(tagID: currentTappedTagID, title: tagTitle, color: tagColor)
 
+                            if viewContext.hasChanges {
+                                print("ad")
+                            }
+                            
+                            do {
+                                try viewContext.save()
+                            } catch {
+                                let nsError = error as NSError
+                                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                            }
+                            
+                            print("asdsdasadlll")
+                            print(personInfo.wrappedTags[3].title)
+                            
                             dismiss()
                         }
                         Button("删除该标签", role: .destructive) {
@@ -78,7 +99,7 @@ struct EditTagView: View {
         }
         .alert("确定删除吗？\n目前该操作不可撤销。", isPresented: $showConfirmDelete, actions: {
             Button("删除", role: .destructive) {
-                if myTag.delete(currentTappedTagID) {
+                if personInfo.delete(currentTappedTagID) {
                     if let records = records {
                         for record in records {
                             if record.wrappedTagIDs.first == currentTappedTagID {
@@ -101,7 +122,7 @@ struct EditTagView: View {
             Button("取消", role: .cancel) {}
         })
         .onAppear {
-            let tag = myTag.getTag(from: currentTappedTagID)
+            let tag = personInfo.getTag(from: currentTappedTagID)
             tagTitle = tag.title
             tagColor = tag.color
             print(tag.title)
